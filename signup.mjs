@@ -1,6 +1,70 @@
-import * as Etebase from "etebase"
+import PocketBase from "pocketbase"
 import promptSync from "prompt-sync";
+import { readFileSync } from "fs";
+
 const prompt = promptSync();
+
+const config = JSON.parse(readFileSync("config.json", {encoding: "utf-8"}))
+
+const pb = new PocketBase(config.url);
+
+await pb.admins.authWithPassword(prompt("Admin email: "), prompt.hide("Admin password: "))
+const users = await pb.collection("users").getFullList();
+
+// 
+await pb.collections.update("users", {
+    schema: [],
+    createRule: null,
+    updateRule: null,
+    deleteRule: null,
+    options: {
+        allowOAuth2Auth: false,
+        allowEmailAuth: false,  // Only affects users, not admins
+        requireEmail: false,
+        minPasswordLength: 5
+    }
+});
+
+
+
+// Create users
+async function createUser(name) {
+    if (users.find(user => user.username == name)) {
+        console.log(`${name} already exists!`)
+    } else {
+        await pb.collection("users").create({
+            username: name,
+            password: prompt.hide(`${name} pass: `),
+            passwordConfirm: prompt.hide(`${name} pass (confirm): `)
+        }, {requestKey: null});
+    }
+
+}
+createUser("chaperone");
+createUser("attendee");
+
+
+try {
+    await pb.collections.getOne("slogans");
+} catch (err) {
+    if (err.status == 404) {
+        console.log("slogans not found, creating...")
+        pb.collections.create({
+            name: "slogans",
+            type: "base",
+            schema: [
+                {
+                    name: "text",
+                    type: "text",
+                    required: true
+                }
+            ]
+        });
+    }
+}
+/*
+
+})*/
 
 /**
  * Etebase is built on top of Django, which has strong password validation rules by default enabled
@@ -15,25 +79,6 @@ const prompt = promptSync();
  * - Run `node signup.mjs`
  * - Change the passwords
  * - Done
- * 
- * 
- * 
- * 
- * 
  */
 
-
-const serverUrl = ""
-
-
-async function changePassword(username) {
-    const pass1 = prompt.hide(`Current ${username} password: `)
-    const etebase = await Etebase.Account.login(username, pass1, serverUrl);
-    await etebase.changePassword(prompt.hide(`New ${username} password: `))
-    await etebase.logout();  // 01235
-}
-
-
-await changePassword("attendee");
-await changePassword("chaperone");
 

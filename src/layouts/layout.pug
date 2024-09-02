@@ -6,9 +6,13 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Document
         link(rel="stylesheet", href="../node_modules/@picocss/pico/css/pico.min.css")
+        link(rel="stylesheet", href="index.scss")
     body
         header
             h1 Protest Communicator
         main
             block content
-        script(src="index.js") 
+            h2 Slogans
+            ul#slogans
+
+        script(src="index.ts" type="module") 
