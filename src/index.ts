@@ -17,6 +17,8 @@ async function login(e) {
         console.log("Logged in!")
         const loginForm = (document.getElementById("loginForm") as HTMLElement);
         loginForm.style.display = "none";
+
+        console.log(pb.collection("slogans").getFullList());
     }
 }
 
@@ -28,3 +30,9 @@ window.addEventListener("unload", function() {
     console.log("Logging out...");
     pb.authStore.clear();
 });
+
+function getPocketBase() {
+    return pb;
+}
+
+export default getPocketBase;

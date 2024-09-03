@@ -2,9 +2,14 @@ import PocketBase from "pocketbase"
 import promptSync from "prompt-sync";
 import { readFileSync } from "fs";
 
+// TODO implement into maintainer
+
 const prompt = promptSync();
 
 const config = JSON.parse(readFileSync("config.json", {encoding: "utf-8"}))
+
+const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocketbase.io/docs/api-rules-and-filters#examples
+const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 
 const pb = new PocketBase(config.url);
 
@@ -14,9 +19,9 @@ const users = await pb.collection("users").getFullList();
 // 
 await pb.collections.update("users", {
     schema: [],
-    createRule: null,
-    updateRule: null,
-    deleteRule: null,
+    createRule: ALLOW_ONLY_ADMINS,
+    updateRule: ALLOW_ONLY_ADMINS,
+    deleteRule: ALLOW_ONLY_ADMINS,
     options: {
         allowOAuth2Auth: false,
         allowEmailAuth: false,  // Only affects users, not admins
@@ -43,7 +48,7 @@ async function createUser(name) {
 createUser("chaperone");
 createUser("attendee");
 
-
+// TODO also update
 try {
     await pb.collections.getOne("slogans");
 } catch (err) {
@@ -58,7 +63,12 @@ try {
                     type: "text",
                     required: true
                 }
-            ]
+            ],
+            listRule: ALLOW_ONLY_REGISTERED_USERS,
+            viewRule: ALLOW_ONLY_REGISTERED_USERS,
+            createRule: ALLOW_ONLY_ADMINS,
+            updateRule: ALLOW_ONLY_ADMINS,
+            deleteRule: ALLOW_ONLY_ADMINS,
         });
     }
 }
