@@ -3,6 +3,16 @@ extends ../layouts/_layout.pug
 include ../layouts/login.pug
 include ../layouts/settings.pug
 
+mixin userForm(username)
+    form(action="POST" id=username).userForm
+        label(for="password")=`${username} PIN:`
+        input(type="password" name="password" placeholder="12345" minlength="5" required=true).password
+
+        label(for="password-confirm")=`${username} PIN (confirm):`
+        input(type="password" name="password-confirm" placeholder="12345" minlength="5" required=true).passwordConfirm
+        
+        input(type="submit" class="username-change" value=`Change ${username} password`)
+
 block nav
     a(href="/src/index.pug")
         li Attendee
@@ -21,5 +31,9 @@ block content
             label(for="require-login") Require PIN for viewing slogans
 
         button(id="setup-collections" name="setup-collections") Setup collections
+
+        h3 Change PIN
+        +userForm("chaperone")
+        +userForm("attendee")
 
     script(src="/src/admin.ts" type="module") 

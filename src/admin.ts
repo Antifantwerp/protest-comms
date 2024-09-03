@@ -56,7 +56,44 @@ async function setupCollections() {
     }
 }
 
+
+
+async function createUser(e) {
+    e.preventDefault();
+
+    const form = $(e.target);
+    const username = form.attr("id");
+    function password() {
+        return form.children(".password").val();
+    }
+    function passwordConfirm() {
+        return form.children(".passwordConfirm").val();
+    }
+    function newUser() {
+        return {
+            username: username,
+            password: password(),
+            passwordConfirm: passwordConfirm()
+        };
+    }
+
+    const users = await pb.collection("users").getFullList();
+    const existingUser = users.find(user => user.username == username);
+
+    
+    try {
+        if (existingUser) {
+            await pb.collection("users").update(existingUser.id, newUser(), {requestKey: null});
+            
+        } else {
+            await pb.collection("users").create(newUser(), {requestKey: null});
+        }
+    } catch (err) {
+        alert(err + " Please check your console for the request response.");
+    }
+}
+
 $(window).on("load", function() {
     $("#setup-collections").on("click", setupCollections);
-
+    $(".userForm").on("submit", createUser);
 });
