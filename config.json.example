@@ -1,1 +1,3 @@
-export default "https://pocketbase.example.com";
+{
+    "url": "https://pocketbase.example.com"
+}
