@@ -1,11 +1,23 @@
 //- Login form
 mixin login(role)
     form#loginForm
-        h2 #{role} login
+        if role
+            h2 #{role} login
+            label(for="password") Enter PIN:
 
-        label(for="password") Enter PIN:
-        input(id="password" name="password" placeholder="12345")
+        else
+            h2 Login
+            input(id="username" name="username" placeholder="username/user@example.com")
+            label(for="password") Enter password:
+
+        input(id="password" name="password" type="password" placeholder="12345")
         input(type="submit" value="Login" id="login")
 
-    script.
-        const username = "!{role.toLowerCase()}";
+    if role
+        script.
+            let username = "!{role.toLowerCase()}";
+            const tryAdminLogin = false;
+    else
+        script.
+            let username = null;
+            const tryAdminLogin = true;

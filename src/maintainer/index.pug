@@ -10,5 +10,12 @@ block nav
         li Chaperone
 
 block content
-    +login("Maintainer")
+    +login()
     +editor()
+
+
+    section#settings
+        form
+            input(type="checkbox" name="require-login" id="require-login")
+            label(for="require-login") Require PIN for viewing slogans
+            //input(type=)

@@ -5,6 +5,9 @@ import config from "../config.json";
 let pb: PocketBase;
 async function login(e) {
     e.preventDefault();
+    
+    // @ts-ignore
+    username = (typeof username === "string") ? username : (document.getElementById("username") as HTMLInputElement).value;
     // @ts-ignore
     console.log(`Logging into ${config.url} as ${username}...`);
     pb = new PocketBase(config.url);
@@ -12,8 +15,11 @@ async function login(e) {
     
 
     if (passInput.value) {
+        
         // @ts-ignore
-        const data = await pb.collection("users").authWithPassword(username, passInput.value);
+        const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
+        // @ts-ignore
+        const data = await login.authWithPassword(username, passInput.value);
         console.log("Logged in!")
         const loginForm = (document.getElementById("loginForm") as HTMLElement);
         loginForm.style.display = "none";
