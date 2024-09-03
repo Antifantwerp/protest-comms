@@ -1,11 +1,25 @@
+mixin select(label, options)
+    - const id = label.toLowerCase();
+    label(for=id)
+        h4=label
+    select(id=id name=id)
+        each option in options
+            option=option
+
 mixin settings()
+    section#send-signal
+        form
+            h3 Send signal
+            +select("Location", ["Front", "Middle", "Back", "Custom"])
+            +select("Type", ["Wait", "Need water", "Need medical intervention", "Police intervention", "Police brutality", "Custom"])
+            +select("Urgency", ["Incoming",  "When possible", "Urgent", "Life-threatening", "Custom" ])
+            input(type="submit" value="Send signal")
+
     section#settings
         h2 Settings
-        form#send-signal
-
 
         fieldset
-            legend Slogans
+            legend Change slogans
             input(type="button" value="Add slogan")#add-slogan
             input(type="button" value="Edit slogans")#edit-slogans
             

@@ -33,6 +33,15 @@ async function editSlogan(e) {
     $("#slogans ol").html(oldSlogansListInner)
 }
 
+function sendSignal(e) {
+    e.preventDefault();
+
+    const form = $(e.target);
+    
+}
+
+
+
 function settingsInit() : PocketBase {
     pb = init();
 
@@ -41,6 +50,8 @@ function settingsInit() : PocketBase {
     
         const addSlogan = $("#add-slogan")
         const editSlogans = $("#edit-slogans")
+
+        $("#send-signal").on("submit", sendSignal);
     
         addSlogan.on("click", (e) => {
             if (!addingSlogan) {
