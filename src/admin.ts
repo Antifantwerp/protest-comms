@@ -21,6 +21,15 @@ async function createOrUpdateCollection(collectionId, schema) {
 async function setupCollections() {
     const requirePINForViewingSlogans = $("#require-login").is(":checked");
 
+    const chaperone = (await pb.collection("users").getFullList()).find(iser => iser.username == "chaperone")
+
+    if (!chaperone) {
+        alert("Please create the chaperone user first by setting a PIN code for it below");
+        return;
+    }
+    const ruleAllowOnlyChaperoneAndAdmins = `@request.auth.id = "${chaperone.id}"`
+
+
     console.log(requirePINForViewingSlogans)
 
     // COLLECTION: users
@@ -52,9 +61,9 @@ async function setupCollections() {
         ],
         listRule: sloganViewOrListPermission,
         viewRule: sloganViewOrListPermission,
-        createRule: ALLOW_ONLY_ADMINS,
-        updateRule: ALLOW_ONLY_ADMINS,
-        deleteRule: ALLOW_ONLY_ADMINS,
+        createRule: ruleAllowOnlyChaperoneAndAdmins,
+        updateRule: ruleAllowOnlyChaperoneAndAdmins,
+        deleteRule: ruleAllowOnlyChaperoneAndAdmins,
     })
 
     // COLLECTION: ping
@@ -70,7 +79,7 @@ async function setupCollections() {
                 required: false
             },
             {
-                name: "activeslogan",
+                name: "currentslogan",
                 type: "relation",
                 options: {
                     collectionId: slogansCollectionId,
@@ -82,8 +91,17 @@ async function setupCollections() {
         listRule: sloganViewOrListPermission,
         viewRule: sloganViewOrListPermission,
         createRule: ALLOW_ONLY_ADMINS,
-        updateRule: ALLOW_ONLY_ADMINS,
+        updateRule: ruleAllowOnlyChaperoneAndAdmins,
         deleteRule: ALLOW_ONLY_ADMINS,
+    })
+
+    // Cleanup any old ping items
+    const allItems = await pb.collection("ping").getFullList()
+    allItems.forEach(async(item) => await pb.collection("ping").delete(item.id))
+    // Create empty ping item
+    await pb.collection("ping").create({
+        message: "",
+        currentslogan: [],
     })
 }
 

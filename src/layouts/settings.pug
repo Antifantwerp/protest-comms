@@ -18,6 +18,10 @@ mixin settings()
     section#settings
         h2 Settings
 
+        label(for="slogan-changer")
+            input(type="checkbox" name="slogan-changer" id="slogan-changer")
+            span Enable current slogan changer
+
         fieldset
             legend Change slogans
             input(type="button" value="Add slogan")#add-slogan

@@ -6,6 +6,47 @@ let pb: PocketBase;
 let addingSlogan = false;
 let oldSlogansListInner = "";
 
+async function changeCurrentSlogan(e) {
+    const selectedRadio = $(e.target)
+    const sloganId = selectedRadio.attr("id");
+    const ping = (await pb.collection("ping").getList(1, 1)).items[0];
+    pb.collection("ping").update(ping.id, {
+        currentslogan: sloganId,
+    })
+}
+
+async function activateSloganChanger() {
+    console.log("Activate!")
+    const slogansList = $("#slogans ol")
+
+    console.log("changerchecked", $("#slogan-changer").is(":checked"))
+
+    if ($("#slogan-changer").is(":checked")) {
+
+        slogansList.children().each((index, elem) => {
+            const li = $(elem);
+    
+            const sloganId = li.attr("id");
+            const sloganText = li.text();
+    
+            const container = $(`<label for="${sloganId}"></label>`);
+            const newLi = $(`<li></li>`);
+            const radio = $(`<input type="radio" name="currentslogan" id="${sloganId}" />`);
+            radio.on("change", changeCurrentSlogan)
+
+            newLi.append(radio);
+            newLi.append(`<span>${sloganText}</span>`);
+            container.append(newLi);
+            li.replaceWith(container);
+        })
+    } else {
+        // TODO: better solution than this. Done because slogans might have changed from oldSlogansListInner
+        if (slogansList.html() != oldSlogansListInner) {
+            window.location.reload();
+
+        }
+    }
+}
 
 async function editSlogan(e) {
     e.preventDefault();
@@ -51,6 +92,14 @@ function settingsInit() : PocketBase {
         const addSlogan = $("#add-slogan")
         const editSlogans = $("#edit-slogans")
 
+        console.log($("#slogan-changer"))
+        $("#slogan-changer").on("change", function() {
+            // Save old slogan state
+            if (oldSlogansListInner == "") {
+                oldSlogansListInner = $("#slogans ol").html();
+            }
+            activateSloganChanger();
+        })
         $("#send-signal").on("submit", sendSignal);
     
         addSlogan.on("click", (e) => {
