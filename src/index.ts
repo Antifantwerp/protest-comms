@@ -25,6 +25,7 @@ async function login(e) {
         loginForm.style.display = "none";
 
         console.log(pb.collection("slogans").getFullList());
+        document.querySelector("main")?.classList.remove("showLogin");
     }
 }
 
