@@ -1,3 +1,3 @@
 import init from "./pocketbase";
 
-const pb = init();
+const pb = init(false, true);

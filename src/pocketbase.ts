@@ -77,7 +77,7 @@ async function loggedIn() {
     }
 }
 
-function init(logout=false): PocketBase {
+function init(logout=false, tryWithoutAuth=false): PocketBase {
     pb = new PocketBase(config.url);
 
     if (logout) {
@@ -86,15 +86,26 @@ function init(logout=false): PocketBase {
         return pb;
     }
 
-    $(window).on("load", function() {
+    $(window).on("load", async function() {
         // Hide everything
         $("main").children().hide();
     
         $("main").removeClass("loading");
         
-    
         // If not logged in
         if (!pb.authStore.isValid) {
+            // For index/attendee page, still try without auth
+            if (tryWithoutAuth) {
+                const data = await pb.collection("slogans").getList(1, 1);  // Return 1
+                if (data.totalItems == 0) {
+                    console.log("No slogans found, assuming you need to log in")
+                } else {
+                    // TODO: cleaner solution
+                    loggedIn();
+                    return pb;
+                }
+            }
+
             // Remove initial hiding class
             $("main").removeClass("loading");
             // Hide all shown elements
