@@ -1,0 +1,13 @@
+extends ../layouts/layout.pug
+
+include ../layouts/login.pug
+
+block nav
+    a(href="/src/index.pug")
+        li Attendee
+    a(href="/src/maintainer/index.pug")
+        li Maintainer
+
+block content
+    +login("Chaperone")
+    
