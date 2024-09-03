@@ -25,16 +25,37 @@ async function loginWithPassword(e) {
         loginForm.style.display = "none";
         loggedIn();
 
-        //console.log(pb.collection("slogans").getFullList());
+        //console.log();
 
     }
 }
 
-function loggedIn() {
+const slogans = $("#slogans ul") // TODO move up
+function addSlogan(sloganRecord) {
+    slogans.append(`<li id="${sloganRecord.id}">${sloganRecord.text}</li>`)
+}
+
+async function loggedIn() {
     // Remove initial hiding class
     // Hide loading & login
     $("#loading").hide();
     $("#loginForm").hide();        
+
+
+    (await pb.collection("slogans").getFullList()).forEach(addSlogan);
+
+
+    pb.collection("slogans").subscribe("*", function(data) {
+        switch (data.action) {
+            case "create":
+                console.log("created")
+                addSlogan(data.record);
+                break;
+            
+            default:
+                throw new Error("Unimplemented action: " + data.action)
+        }
+    });
 
     // Show slogans for everyone logged in
     $('#slogans').show(400)
