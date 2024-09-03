@@ -1,7 +1,7 @@
 import PocketBase from "pocketbase";
 import config from "../config.json";
 
-let pb;
+let pb: PocketBase;
 
 
 async function loginWithPassword(e) {
@@ -50,8 +50,14 @@ function loggedIn() {
     }
 }
 
-function init() {
+function init(logout=false): PocketBase {
     pb = new PocketBase(config.url);
+
+    if (logout) {
+        pb.authStore.clear();
+        window.history.back()
+        return pb;
+    }
 
     window.addEventListener("load", function() {
         // Hide everything
@@ -74,11 +80,6 @@ function init() {
             loggedIn();
         }
         
-    });
-    
-    window.addEventListener("unload", function() {
-        /*console.log("Logging out...");
-        pb.authStore.clear();*/
     });
     
     return pb;
