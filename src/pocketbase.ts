@@ -30,7 +30,7 @@ async function loginWithPassword(e) {
     }
 }
 
-const slogans = $("#slogans ul") // TODO move up
+const slogans = $("#slogans ol") // TODO move up
 function addSlogan(sloganRecord) {
     slogans.append(`<li id="${sloganRecord.id}">${sloganRecord.text}</li>`)
 }
