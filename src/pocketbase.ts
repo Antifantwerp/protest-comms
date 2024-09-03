@@ -59,7 +59,7 @@ function init(logout=false): PocketBase {
         return pb;
     }
 
-    window.addEventListener("load", function() {
+    $(window).on("load", function() {
         // Hide everything
         $("main").children().hide();
     
