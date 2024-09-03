@@ -11,7 +11,7 @@ async function editSlogan(e) {
     e.preventDefault();
 
     const form = $(e.target);
-    const sloganId = form.attr("id");
+    const sloganId = form.data("slogan-id");
 
     if (!sloganId) {
         console.error("editSlogan could not get sloganId from form")
@@ -66,7 +66,7 @@ function settingsInit() : PocketBase {
                 const sloganId = li.attr("id");
                 const sloganText = li.text();
                 const newLi = $(`<li></li>`)
-                const form = $(`<form id="${sloganId}"></form>`)
+                const form = $(`<form data-slogan-id="${sloganId}"></form>`)
                 form.append(`<input type="text" value="${sloganText}" class="text" />`)
                     .append(`<input type="submit" class="save" value="Save" />`)
                     .append(`<input type="submit" class="delete" value="Delete" />`)

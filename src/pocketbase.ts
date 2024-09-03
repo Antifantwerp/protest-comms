@@ -35,6 +35,14 @@ function addSlogan(sloganRecord) {
     slogans.append(`<li id="${sloganRecord.id}">${sloganRecord.text}</li>`)
 }
 
+function updateSlogan(sloganRecord) {
+    $("#" + sloganRecord.id).text(sloganRecord.text)
+}
+
+function deleteSlogan(sloganRecord) {
+    $("#" + sloganRecord.id).remove();
+}
+
 async function loggedIn() {
     // Remove initial hiding class
     // Hide loading & login
@@ -49,10 +57,17 @@ async function loggedIn() {
         pb.collection("slogans").subscribe("*", function(data) {
             switch (data.action) {
                 case "create":
-                    console.log("created")
                     addSlogan(data.record);
                     break;
                 
+                case "update":
+                    updateSlogan(data.record);
+                    break;
+
+                case "delete":
+                    deleteSlogan(data.record);
+                    break;
+
                 default:
                     throw new Error("Unimplemented action: " + data.action)
             }
