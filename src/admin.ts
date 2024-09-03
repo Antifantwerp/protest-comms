@@ -6,6 +6,17 @@ const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocket
 const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 const ALLOW_EVERYONE = "";  // empty allows everyone, no matter if logged in
 
+async function createOrUpdateCollection(collectionId, schema) {
+    try {
+        await pb.collections.getOne(collectionId);
+        await pb.collections.update(collectionId, schema)
+    } catch (err) {
+        if (err.status == 404) {
+            console.log(collectionId +  " not found, creating...")
+            await pb.collections.create(schema);
+        }
+    }
+}
 
 async function setupCollections() {
     const requirePINForViewingSlogans = $("#require-login").is(":checked");
@@ -29,7 +40,7 @@ async function setupCollections() {
     
     // COLLECTION: slogans
     const sloganViewOrListPermission = requirePINForViewingSlogans ? ALLOW_ONLY_REGISTERED_USERS : ALLOW_EVERYONE;
-    const slogansSchema = {
+    await createOrUpdateCollection("slogans", {
         name: "slogans",
         type: "base",
         schema: [
@@ -44,16 +55,36 @@ async function setupCollections() {
         createRule: ALLOW_ONLY_ADMINS,
         updateRule: ALLOW_ONLY_ADMINS,
         deleteRule: ALLOW_ONLY_ADMINS,
-    }
-    try {
-        await pb.collections.getOne("slogans");
-        await pb.collections.update("slogans", slogansSchema)
-    } catch (err) {
-        if (err.status == 404) {
-            console.log("slogans not found, creating...")
-            await pb.collections.create(slogansSchema);
-        }
-    }
+    })
+
+    // COLLECTION: ping
+    const slogansCollectionId = (await pb.collections.getOne("slogans")).id;
+    console.log("sloganid", slogansCollectionId)
+    await createOrUpdateCollection("ping", {
+        name: "ping",
+        type: "base",
+        schema: [
+            {
+                name: "message",
+                type: "text",
+                required: false
+            },
+            {
+                name: "activeslogan",
+                type: "relation",
+                options: {
+                    collectionId: slogansCollectionId,
+                    maxSelect: 1,
+                    cascadeDelete: false
+                }
+            },
+        ],
+        listRule: sloganViewOrListPermission,
+        viewRule: sloganViewOrListPermission,
+        createRule: ALLOW_ONLY_ADMINS,
+        updateRule: ALLOW_ONLY_ADMINS,
+        deleteRule: ALLOW_ONLY_ADMINS,
+    })
 }
 
 
