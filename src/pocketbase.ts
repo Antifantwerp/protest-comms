@@ -42,20 +42,26 @@ async function loggedIn() {
     $("#loginForm").hide();        
 
 
-    (await pb.collection("slogans").getFullList()).forEach(addSlogan);
+    try {
+        (await pb.collection("slogans").getFullList()).forEach(addSlogan);
 
 
-    pb.collection("slogans").subscribe("*", function(data) {
-        switch (data.action) {
-            case "create":
-                console.log("created")
-                addSlogan(data.record);
-                break;
-            
-            default:
-                throw new Error("Unimplemented action: " + data.action)
-        }
-    });
+        pb.collection("slogans").subscribe("*", function(data) {
+            switch (data.action) {
+                case "create":
+                    console.log("created")
+                    addSlogan(data.record);
+                    break;
+                
+                default:
+                    throw new Error("Unimplemented action: " + data.action)
+            }
+        });
+    } catch (err) {
+        console.error("Error while retrieving slogans" + (pb.authStore.isAdmin ? `. Please go to ${window.location.origin}/maintainer.html, use the setup collections button` : ""))
+        console.error(err);
+    }
+    
 
     // Show slogans for everyone logged in
     $('#slogans').show(400)

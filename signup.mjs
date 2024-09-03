@@ -8,8 +8,6 @@ const prompt = promptSync();
 
 const config = JSON.parse(readFileSync("config.json", {encoding: "utf-8"}))
 
-const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocketbase.io/docs/api-rules-and-filters#examples
-const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 
 const pb = new PocketBase(config.url);
 
@@ -17,18 +15,7 @@ await pb.admins.authWithPassword(prompt("Admin email: "), prompt.hide("Admin pas
 const users = await pb.collection("users").getFullList();
 
 // 
-await pb.collections.update("users", {
-    schema: [],
-    createRule: ALLOW_ONLY_ADMINS,
-    updateRule: ALLOW_ONLY_ADMINS,
-    deleteRule: ALLOW_ONLY_ADMINS,
-    options: {
-        allowOAuth2Auth: false,
-        allowEmailAuth: false,  // Only affects users, not admins
-        requireEmail: false,
-        minPasswordLength: 5
-    }
-});
+
 
 
 
@@ -49,29 +36,7 @@ createUser("chaperone");
 createUser("attendee");
 
 // TODO also update
-try {
-    await pb.collections.getOne("slogans");
-} catch (err) {
-    if (err.status == 404) {
-        console.log("slogans not found, creating...")
-        pb.collections.create({
-            name: "slogans",
-            type: "base",
-            schema: [
-                {
-                    name: "text",
-                    type: "text",
-                    required: true
-                }
-            ],
-            listRule: ALLOW_ONLY_REGISTERED_USERS,
-            viewRule: ALLOW_ONLY_REGISTERED_USERS,
-            createRule: ALLOW_ONLY_ADMINS,
-            updateRule: ALLOW_ONLY_ADMINS,
-            deleteRule: ALLOW_ONLY_ADMINS,
-        });
-    }
-}
+
 /*
 
 })*/
