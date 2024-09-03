@@ -1,7 +1,7 @@
 extends ../layouts/_layout.pug
 
 include ../layouts/login.pug
-include ../layouts/editor.pug
+include ../layouts/settings.pug
 
 block nav
     a(href="/src/index.pug")
@@ -11,4 +11,4 @@ block nav
 
 block content
     +login("Chaperone")
-    +editor()
+    +settings()

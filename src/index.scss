@@ -1,5 +1,8 @@
-.showLogin {
-    > :not(#loginForm) {
+.loading {
+    > * {
         display: none;
+    }
+    #loading {
+        display: initial;
     }
 }
