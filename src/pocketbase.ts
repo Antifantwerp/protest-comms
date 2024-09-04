@@ -1,12 +1,5 @@
 import PocketBase from "pocketbase";
-import { Notyf } from "notyf";
-
-const notyf = new Notyf({
-    position: {
-        x: "center",
-        y: "top"
-    },
-})
+import {success, error, warning, init as initNotyf} from "./notify";
 
 let pb: PocketBase;
 
@@ -21,16 +14,19 @@ async function loginWithPassword(e) {
     if (passInput.value) {
         
         const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
-        // @ts-ignore
-        const data = await login.authWithPassword(username, passInput.value);
+        try {
+            // @ts-ignore
+            const data = await login.authWithPassword(username, passInput.value);
+        } catch (err) {
+            error(err.response.message);
+            return;
+        }
+
         
-        notyf.success("Logged in!")
+        success("Logged in!")
         const loginForm = (document.getElementById("loginForm") as HTMLElement);
         loginForm.style.display = "none";
         loggedIn();
-
-        //console.log();
-
     }
 }
 
@@ -105,6 +101,9 @@ async function loggedIn() {
 }
 
 function init(justReturnPb=false, tryWithoutAuth=false): PocketBase {
+    // Init notifications
+    initNotyf();
+
     const pocketBaseUrl = process.env.POCKETBASE_URL;
     if (!pocketBaseUrl) {
         alert("No database url could be found. Please report this to the site admin!");
@@ -128,7 +127,7 @@ function init(justReturnPb=false, tryWithoutAuth=false): PocketBase {
             if (tryWithoutAuth) {
                 const data = await pb.collection("slogans").getList(1, 1);  // Return 1
                 if (data.totalItems == 0) {
-                    console.log("No slogans found, assuming you need to log in")
+                    warning("No slogans could be loaded. Are you logged in?");
                 } else {
                     // TODO: cleaner solution
                     loggedIn();

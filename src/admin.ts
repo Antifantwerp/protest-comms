@@ -1,4 +1,6 @@
 import init from "./settings";
+import {success, error, warning} from "./notify";
+
 
 const pb = init();
 
@@ -12,7 +14,7 @@ async function createOrUpdateCollection(collectionId, schema) {
         await pb.collections.update(collectionId, schema)
     } catch (err) {
         if (err.status == 404) {
-            console.log(collectionId +  " not found, creating...")
+            warning(collectionId +  " not found, creating...")
             await pb.collections.create(schema);
         }
     }
@@ -29,8 +31,6 @@ async function setupCollections() {
     }
     const ruleAllowOnlyChaperoneAndAdmins = `@request.auth.id = "${chaperone.id}"`
 
-
-    console.log(requirePINForViewingSlogans)
 
     // COLLECTION: users
     await pb.collections.update("users", {
@@ -68,7 +68,6 @@ async function setupCollections() {
 
     // COLLECTION: ping
     const slogansCollectionId = (await pb.collections.getOne("slogans")).id;
-    console.log("sloganid", slogansCollectionId)
     await createOrUpdateCollection("ping", {
         name: "ping",
         type: "base",

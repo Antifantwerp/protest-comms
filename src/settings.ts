@@ -16,10 +16,7 @@ async function changeCurrentSlogan(e) {
 }
 
 async function activateSloganChanger() {
-    console.log("Activate!")
     const slogansList = $("#slogans ol")
-
-    console.log("changerchecked", $("#slogan-changer").is(":checked"))
 
     if ($("#slogan-changer").is(":checked")) {
 
@@ -62,7 +59,6 @@ async function editSlogan(e) {
     switch (form.data("action")) {
         case "save":
             const newValue = form.children(".text").first().val();
-            console.log("Setting to " + newValue);
             await pb.collection("slogans").update(sloganId, {
                 text: newValue
             })
@@ -87,12 +83,9 @@ function settingsInit() : PocketBase {
     pb = init();
 
     $(window).on("load", () => {
-        console.log("Loaded settings")
-    
         const addSlogan = $("#add-slogan")
         const editSlogans = $("#edit-slogans")
 
-        console.log($("#slogan-changer"))
         $("#slogan-changer").on("change", function() {
             // Save old slogan state
             if (oldSlogansListInner == "") {
