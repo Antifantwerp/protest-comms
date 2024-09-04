@@ -3,6 +3,7 @@ mixin login(username)
     form#loginForm
         if username
             h2 #{username} login
+            input(id="username" name="username" value=username.toLowerCase() style="display:none;")
             label(for="password") Enter PIN:
 
         else
@@ -11,13 +12,6 @@ mixin login(username)
             label(for="password") Enter password:
 
         input(id="password" name="password" type="password" placeholder="12345")
-        input(type="submit" value="Login" id="login")
 
-    if username
-        script.
-            let username = "!{username.toLowerCase()}";
-            const tryAdminLogin = false;
-    else
-        script.
-            let username = null;
-            const tryAdminLogin = true;
+        input(type="checkbox" name="try-admin-login" id="try-admin-login" style="display:none;" checked=!Boolean(username))
+        input(type="submit" value="Login" id="login")

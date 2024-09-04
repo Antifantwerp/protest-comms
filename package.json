@@ -8,7 +8,7 @@
   "scripts": {
     "start": "parcel",
     "build": "parcel build",
-    "clean": "rm .parcel-cache/* & rmdir .parcel-cache & rm dist/* & rmdir dist"
+    "clean": "rm -rf .{parcel-cache,dist}/"
   },
   "devDependencies": {
     "@parcel/transformer-inline-string": "2.12.0",

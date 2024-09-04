@@ -7,13 +7,12 @@ let pb: PocketBase;
 async function loginWithPassword(e) {
     e.preventDefault();
     
-    // @ts-ignore
-    username = (typeof username === "string") ? username : (document.getElementById("username") as HTMLInputElement).value;
+    const username =  $("#username").val();
     const passInput: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
+    const tryAdminLogin = $("#try-admin-login").is(":checked")
 
     if (passInput.value) {
         
-        // @ts-ignore
         const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
         // @ts-ignore
         const data = await login.authWithPassword(username, passInput.value);
