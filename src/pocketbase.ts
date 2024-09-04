@@ -72,6 +72,13 @@ async function loggedIn() {
                     throw new Error("Unimplemented action: " + data.action)
             }
         });
+
+        pb.collection("ping").subscribe("*", function(data) {
+            if (data.action == "update") {
+                $(".current-slogan").removeClass("current-slogan");
+                $("#" + data.record.currentslogan).addClass("current-slogan")
+            }
+        })
     } catch (err) {
         console.error("Error while retrieving slogans" + (pb.authStore.isAdmin ? `. Please go to ${window.location.origin}/maintainer.html, use the setup collections button` : ""))
         console.error(err);
