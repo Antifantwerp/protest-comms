@@ -17,16 +17,30 @@ cd protest-comms
 
 # Install dependencies
 yarn install
+```
 
-# Create url.js file in repo source. See url.js.example
-# nano url.js
+> At this point, rename [.env.example](.env.example) to .env and change the value(s) to match your setup.
+> Alternatively, set the values as environment variables.
 
+```bash
 # Run parcel live server
 yarn start
 
 # Build static website to dist/
 yarn build 
 ```
+
+### Server/pocketbase setup
+This requires a running [Pocketbase](https://pocketbase.io/) instance, with a configured *Admin account*.
+See [the instructions to set up Pocketbase](https://pocketbase.io/docs/).
+
+1. Build the website files (see `dist/` folder after running `yarn build`),
+2. Serve the files from step 1 somewhere (through GitHub Pages, a webserver...). Any static host will do!
+3. Navigate to `https://example.com/admin.html` (replacing the url with your pocketbase url)
+4. Log in using your Pocketbase admin credentials
+5. Scroll down to *Admin settings*. Use the *Change PIN* panel to change the PIN for both *Chaperone* and *Attendee*. This will also create the users in case they don't already exist!
+6. Enable/disable *Require PIN for viewing slogans* as wanted, and then press *Setup collections*. This will create the `slogans` and `ping` collections.
+7. Done! You and *chaperones* can both add/edit/remove slogans as wanted.
 
 ## Explanation
 ### Permissions
