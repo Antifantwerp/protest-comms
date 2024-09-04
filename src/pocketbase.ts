@@ -1,5 +1,12 @@
 import PocketBase from "pocketbase";
-//import config from "../config.json";
+import { Notyf } from "notyf";
+
+const notyf = new Notyf({
+    position: {
+        x: "center",
+        y: "top"
+    },
+})
 
 let pb: PocketBase;
 
@@ -17,7 +24,7 @@ async function loginWithPassword(e) {
         // @ts-ignore
         const data = await login.authWithPassword(username, passInput.value);
         
-        console.log("Logged in!")
+        notyf.success("Logged in!")
         const loginForm = (document.getElementById("loginForm") as HTMLElement);
         loginForm.style.display = "none";
         loggedIn();
@@ -97,7 +104,7 @@ async function loggedIn() {
     }
 }
 
-function init(logout=false, tryWithoutAuth=false): PocketBase {
+function init(justReturnPb=false, tryWithoutAuth=false): PocketBase {
     const pocketBaseUrl = process.env.POCKETBASE_URL;
     if (!pocketBaseUrl) {
         alert("No database url could be found. Please report this to the site admin!");
@@ -105,9 +112,7 @@ function init(logout=false, tryWithoutAuth=false): PocketBase {
     }
     pb = new PocketBase(pocketBaseUrl);
 
-    if (logout) {
-        pb.authStore.clear();
-        window.history.back()
+    if (justReturnPb) {
         return pb;
     }
 

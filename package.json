@@ -23,6 +23,7 @@
   "dependencies": {
     "@picocss/pico": "^2.0.6",
     "jquery": "^3.7.1",
+    "notyf": "^3.10.0",
     "svg-loaders": "^0.2.0"
   }
 }
