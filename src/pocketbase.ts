@@ -1,5 +1,5 @@
 import PocketBase from "pocketbase";
-import config from "../config.json";
+//import config from "../config.json";
 
 let pb: PocketBase;
 
@@ -9,8 +9,6 @@ async function loginWithPassword(e) {
     
     // @ts-ignore
     username = (typeof username === "string") ? username : (document.getElementById("username") as HTMLInputElement).value;
-    // @ts-ignore
-    console.log(`Logging into ${config.url} as ${username}...`);
     const passInput: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
 
     if (passInput.value) {
@@ -101,7 +99,12 @@ async function loggedIn() {
 }
 
 function init(logout=false, tryWithoutAuth=false): PocketBase {
-    pb = new PocketBase(config.url);
+    const pocketBaseUrl = process.env.POCKETBASE_URL;
+    if (!pocketBaseUrl) {
+        alert("No database url could be found. Please report this to the site admin!");
+        return pb;
+    }
+    pb = new PocketBase(pocketBaseUrl);
 
     if (logout) {
         pb.authStore.clear();
