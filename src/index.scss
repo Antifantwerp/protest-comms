@@ -1,3 +1,7 @@
+body {
+    font-size: 16px;
+}
+
 .loading {
     > * {
         display: none;
@@ -7,7 +11,22 @@
     }
 }
 
+
 .current-slogan {
     font-size: 1.5em;
     font-weight: bold;
+}
+
+#slogans ol {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    > * {
+        height: 5rem;
+        line-height: 4.5rem;
+
+        $border: 1px groove rgb(221, 221, 221);
+        border-top: $border;
+        border-bottom: $border;
+    }
 }
