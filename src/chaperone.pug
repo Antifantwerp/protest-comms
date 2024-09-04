@@ -1,12 +1,12 @@
-extends ../layouts/_layout.pug
+extends layouts/_layout.pug
 
-include ../layouts/login.pug
-include ../layouts/settings.pug
+include layouts/login.pug
+include layouts/settings.pug
 
 block nav
     a(href="/src/index.pug")
         li Attendee
-    a(href="/src/maintainer/index.pug")
+    a(href="/src/maintainer.pug")
         li Maintainer
 
 block content

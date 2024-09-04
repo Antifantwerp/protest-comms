@@ -1,7 +1,7 @@
-extends ../layouts/_layout.pug
+extends layouts/_layout.pug
 
-include ../layouts/login.pug
-include ../layouts/settings.pug
+include layouts/login.pug
+include layouts/settings.pug
 
 mixin userForm(username)
     form(action="POST" id=username).userForm
@@ -16,7 +16,7 @@ mixin userForm(username)
 block nav
     a(href="/src/index.pug")
         li Attendee
-    a(href="/src/chaperone/index.pug")
+    a(href="/src/chaperone.pug")
         li Chaperone
 
 block content
