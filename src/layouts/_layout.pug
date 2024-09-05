@@ -12,11 +12,6 @@ html(lang="en")
     body
         header
             h1 Protest Communicator
-            nav
-                ul
-                    block nav
-                    a(href="/src/logout.pug")
-                        li Logout
 
         main.loading
             p#loading Loading...
@@ -26,3 +21,13 @@ html(lang="en")
                 ol
             
             block content
+        
+        footer
+            details
+                summary &gt; Click here to login/logout
+                nav
+                    ul
+                        block nav
+                        a(href="/src/logout.pug")
+                            li Logout
+
