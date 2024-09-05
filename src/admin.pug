@@ -26,9 +26,11 @@ block content
 
     section#admin-settings
         h2 Admin Settings
-        form
-            input(type="checkbox" name="require-login" id="require-login")
-            label(for="require-login") Require PIN for viewing slogans
+        form(action="post")
+            fieldset
+                legend Collections settings
+                input(type="checkbox" name="require-login" id="require-login" )
+                label(for="require-login") Require PIN for viewing slogans
 
         button(id="setup-collections" name="setup-collections") Setup collections
 

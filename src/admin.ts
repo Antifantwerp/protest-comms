@@ -168,9 +168,15 @@ async function createUser(e) {
     }
 }
 
+function onRequireLoginChange() {
+    $("#require-login + label").after("<p>Press Setup collections to save changes!</p>")
+    $("#require-login").off("change");
+}
+
 $(window).on("load", async function() {
     $("#setup-collections").on("click", setupCollections);
     $(".userForm").on("submit", createUser);
+    $("#require-login").on("change", onRequireLoginChange);
 
     try {
         const slogans = await pb.collections.getOne(pb.collection("slogans").collectionIdOrName);
