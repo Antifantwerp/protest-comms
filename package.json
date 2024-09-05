@@ -1,6 +1,6 @@
 {
   "name": "protest-comms",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Coordinate slogans, moving, and communicate the needs of your group",
   "source": "src/index.pug",
   "author": "Pigeon",
