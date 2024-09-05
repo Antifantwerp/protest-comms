@@ -1,3 +1,3 @@
-import init from "./pocketbase";
+import { init } from "./pocketbase";
 
 const pb = init(false, true);

@@ -1,4 +1,4 @@
-import init from "./pocketbase";
+import { init } from "./pocketbase";
 
 async function logout() {
     const pb = init(true);

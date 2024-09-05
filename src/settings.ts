@@ -1,11 +1,12 @@
-import PocketBase from "pocketbase";
-import init from "./pocketbase";
-import { reportError } from "./notify";
+import PocketBase, { UnsubscribeFunc } from "pocketbase";
+import { init, subscribeToSloganChange } from "./pocketbase";
+import { error, reportError } from "./notify";
 
 let pb: PocketBase;
 
 let addingSlogan = false;
 let oldSlogansListInner = "";
+let editorSubscription: UnsubscribeFunc;
 const signalQuickSelectors = $("#send-signal select");
 
 async function changeCurrentSlogan(e) {
@@ -69,7 +70,7 @@ async function editSlogan(e) {
             await pb.collection("slogans").delete(sloganId);
             break;
     }
-    $("#slogans ol").html(oldSlogansListInner)
+
 }
 
 async function onSubmitSendSignal(e) {
@@ -120,33 +121,75 @@ function onClickAddSlogan(e) {
     addingSlogan = !addingSlogan;
 }
 
-function onClickEditSlogans() {
-    const slogansList = $("#slogans ol")
-    oldSlogansListInner = slogansList.html();
+function _createAddSloganForm(sloganId: string, sloganText: string) {
+    const newLi = $(`<li></li>`)
+    const form = $(`<form data-slogan-id="${sloganId}"></form>`)
+    form.append(`<input type="text" value="${sloganText}" id="edit-${sloganId}" class="text" />`)
+        .append(`<input type="submit" class="save" value="Save" />`)
+        .append(`<input type="submit" class="delete" value="Delete" />`)
 
-    slogansList.children().each((index, elem) => {
+    // Based on https://stackoverflow.com/a/6452340
+    form.children(".save").on("click", () => {
+        form.data("action", "save");
+    });
+    form.children(".delete").on("click", () => {
+        form.data("action", "delete");
+    });
+
+    form.on("submit", editSlogan);
+
+    newLi.append(form);
+
+    $("#editor-change-slogans ol").append(newLi);
+    $("#editor-change-slogans").show(400);
+}
+
+async function onClickEditSlogans() {
+    const slogansList = $("#slogans ol");
+
+    if (editorCleanup()) {
+        return;
+    }
+
+    slogansList.children().each((index: number, elem: HTMLElement) => {
         const li = $(elem);
         const sloganId = li.attr("id");
         const sloganText = li.text();
-        const newLi = $(`<li></li>`)
-        const form = $(`<form data-slogan-id="${sloganId}"></form>`)
-        form.append(`<input type="text" value="${sloganText}" class="text" />`)
-            .append(`<input type="submit" class="save" value="Save" />`)
-            .append(`<input type="submit" class="delete" value="Delete" />`)
+        if (!sloganId) {
+            error("Couldn't find sloganId from li element. See console logs for more info");
+            console.log(li);
+            return;
+        }
+        _createAddSloganForm(sloganId, sloganText);
+    });
 
-        // Based on https://stackoverflow.com/a/6452340
-        form.children(".save").on("click", () => {
-            form.data("action", "save");
-        });
-        form.children(".delete").on("click", () => {
-            form.data("action", "delete");
-        });
+    editorSubscription = await subscribeToSloganChange(
+        // Add
+        (record) => {
+            _createAddSloganForm(record.id, record.text);
+        },
+        // Update
+        (record) => {
+            $("#edit-" + record.id).val(record.text);
+        },
+        // Delete
+        (record) => {
+            $(`form[data-slogan-id="${record.id}"]`).parent().remove();
+        }
+    );
+}
 
-        form.on("submit", editSlogan);
-
-        newLi.append(form);
-        li.replaceWith(newLi);
-    })
+function editorCleanup() {
+    if ($("#editor-change-slogans ol").children().length || $("#editor-current-slogan ol").children().length) {
+        editorSubscription(); // Run unsubscribe func
+        $("#editor-change-slogans ol").empty();
+        $("#editor-current-slogan ol").empty();
+        $("#editor-change-slogans").hide(400);
+        $("#editor-current-slogan").hide(400);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 function settingsInit() : PocketBase {

@@ -48,7 +48,7 @@ function subscribeToSloganChange(
     updateSloganElement: (sloganRecord: RecordModel) => void=updateSlogan,
     deleteSloganElement: (sloganRecord: RecordModel) => void=deleteSlogan,
 ) {
-    pb.collection("slogans").subscribe("*", function(data) {
+    return pb.collection("slogans").subscribe("*", function(data) {
         switch (data.action) {
             case "create":
                 addSloganElement(data.record);
@@ -182,4 +182,4 @@ function init(justReturnPb=false, tryWithoutAuth=false): PocketBase {
     return pb;
 }
 
-export default init;
+export { init, subscribeToSloganChange };
