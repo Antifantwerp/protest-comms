@@ -169,8 +169,7 @@ async function createUser(e) {
 }
 
 function onRequireLoginChange() {
-    $("#require-login + label").after("<p>Press Setup collections to save changes!</p>")
-    $("#require-login").off("change");
+    warning("Press Setup collections to save changes!");
 }
 
 $(window).on("load", async function() {
