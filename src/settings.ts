@@ -72,7 +72,7 @@ async function editSlogan(e) {
     $("#slogans ol").html(oldSlogansListInner)
 }
 
-async function sendSignal(e) {
+async function onSubmitSendSignal(e) {
     e.preventDefault();
 
     const form = $(e.target);
@@ -91,75 +91,77 @@ async function sendSignal(e) {
 }
 
 
-function signalQuickSelect() {
+function onInputSignalQuickSelect() {
     const [urgency, type, location] = signalQuickSelectors.map((i, elem) => $(elem).val());
     $("#signal").val(`${urgency}: ${type} ${location}`)
+}
+
+function onChangeSloganChanger() {
+    // Save old slogan state
+    if (oldSlogansListInner == "") {
+        oldSlogansListInner = $("#slogans ol").html();
+    }
+    activateSloganChanger();
+}
+
+function onClickAddSlogan(e) {
+    const addSlogan = $(e.target);
+    if (!addingSlogan) {
+        addSlogan.before(`<label for="new-slogan" id="new-slogan-label" />`)
+                 .before(`<input type="text" id="new-slogan" name="new-slogan" placeholder="New slogan text..." />`)
+        addSlogan.val("Save new slogan");
+    } else {
+        pb.collection("slogans").create({
+            text: $("#new-slogan").val()
+        });
+        $("#new-slogan").remove();
+        $("#new-slogan-label").remove();
+    }
+    addingSlogan = !addingSlogan;
+}
+
+function onClickEditSlogans() {
+    const slogansList = $("#slogans ol")
+    oldSlogansListInner = slogansList.html();
+
+    slogansList.children().each((index, elem) => {
+        const li = $(elem);
+        const sloganId = li.attr("id");
+        const sloganText = li.text();
+        const newLi = $(`<li></li>`)
+        const form = $(`<form data-slogan-id="${sloganId}"></form>`)
+        form.append(`<input type="text" value="${sloganText}" class="text" />`)
+            .append(`<input type="submit" class="save" value="Save" />`)
+            .append(`<input type="submit" class="delete" value="Delete" />`)
+
+        // Based on https://stackoverflow.com/a/6452340
+        form.children(".save").on("click", () => {
+            form.data("action", "save");
+        });
+        form.children(".delete").on("click", () => {
+            form.data("action", "delete");
+        });
+
+        form.on("submit", editSlogan);
+
+        newLi.append(form);
+        li.replaceWith(newLi);
+    })
 }
 
 function settingsInit() : PocketBase {
     pb = init();
 
     $(window).on("load", () => {
-        const addSlogan = $("#add-slogan")
-        const editSlogans = $("#edit-slogans")
-
         // Load default values into #signal value
-        signalQuickSelect();
+        onInputSignalQuickSelect();
 
-        $("#slogan-changer").on("change", function() {
-            // Save old slogan state
-            if (oldSlogansListInner == "") {
-                oldSlogansListInner = $("#slogans ol").html();
-            }
-            activateSloganChanger();
-        })
-        $("#send-signal").on("submit", sendSignal);
-        signalQuickSelectors.on("input", signalQuickSelect);
+        $("#slogan-changer").on("change", onChangeSloganChanger);
+        $("#send-signal").on("submit", onSubmitSendSignal);
+        signalQuickSelectors.on("input", onInputSignalQuickSelect);
     
-        addSlogan.on("click", (e) => {
-            if (!addingSlogan) {
-                addSlogan.before(`<label for="new-slogan" id="new-slogan-label" />`)
-                         .before(`<input type="text" id="new-slogan" name="new-slogan" placeholder="New slogan text..." />`)
-                addSlogan.val("Save new slogan");
-            } else {
-                pb.collection("slogans").create({
-                    text: $("#new-slogan").val()
-                });
-                $("#new-slogan").remove();
-                $("#new-slogan-label").remove();
-            }
-            addingSlogan = !addingSlogan;
-        });
-
-        editSlogans.on("click", (e) => {
-            const slogansList = $("#slogans ol")
-            oldSlogansListInner = slogansList.html();
-
-            slogansList.children().each((index, elem) => {
-                const li = $(elem);
-                const sloganId = li.attr("id");
-                const sloganText = li.text();
-                const newLi = $(`<li></li>`)
-                const form = $(`<form data-slogan-id="${sloganId}"></form>`)
-                form.append(`<input type="text" value="${sloganText}" class="text" />`)
-                    .append(`<input type="submit" class="save" value="Save" />`)
-                    .append(`<input type="submit" class="delete" value="Delete" />`)
-
-                // Based on https://stackoverflow.com/a/6452340
-                form.children(".save").on("click", () => {
-                    form.data("action", "save");
-                });
-                form.children(".delete").on("click", () => {
-                    form.data("action", "delete");
-                });
-
-                form.on("submit", editSlogan);
-
-                newLi.append(form);
-                li.replaceWith(newLi);
-            })
-        })
-
+        $("#add-slogan").on("click", onClickAddSlogan);
+        $("#edit-slogans").on("click", onClickEditSlogans);
     })
 
     return pb;
