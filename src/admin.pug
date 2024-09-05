@@ -35,7 +35,8 @@ block content
         button(id="setup-collections" name="setup-collections") Setup collections
 
         h3 Change PIN
-        +userForm("chaperone")
-        +userForm("attendee")
+        section#user-forms.grid
+            +userForm("chaperone")
+            +userForm("attendee")
 
     script(src="/src/admin.ts" type="module") 

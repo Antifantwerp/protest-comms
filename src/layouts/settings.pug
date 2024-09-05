@@ -2,19 +2,21 @@ mixin select(label, options)
     - const id = label.toLowerCase();
     label(for=id)
         h5=label
-    select(id=id name=id class="class")
-        each option in options
-            option=option
+        select(id=id name=id class="class")
+            each option in options
+                option=option
 
 mixin settings()
     section#send-signal
         form(action="POST")
             h3 Send signal
-            h4 Quick select
-            +select("Urgency", ["Incoming",  "When possible", "Urgent", "Life-threatening" ])
-            +select("Type", ["wait", "need water", "need medical intervention", "police intervention", "police brutality"])
-            +select("Location", ["everywhere", "at the front", "at the middle", "at the back"])
-            
+            fieldset.grid
+                legend
+                    h4 Quick select
+                +select("Urgency", ["Incoming",  "When possible", "Urgent", "Life-threatening" ])
+                +select("Type", ["wait", "need water", "need medical intervention", "police intervention", "police brutality"])
+                +select("Location", ["everywhere", "at the front", "at the middle", "at the back"])
+                
             label(for="signal") Signal to send:
             input(type="text" name="signal" id="signal")
             input(type="submit" value="Send signal")
