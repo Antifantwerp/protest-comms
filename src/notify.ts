@@ -12,6 +12,8 @@ function init() {
             x: "center",
             y: "top"
         },
+        duration: 5000,
+        dismissible: true,
         types: [
             {
                 type: "error",
