@@ -5,6 +5,7 @@ let pb: PocketBase;
 
 let addingSlogan = false;
 let oldSlogansListInner = "";
+const signalQuickSelectors = $("#send-signal select");
 
 async function changeCurrentSlogan(e) {
     const selectedRadio = $(e.target)
@@ -78,6 +79,10 @@ function sendSignal(e) {
 }
 
 
+function signalQuickSelect() {
+    const [urgency, type, location] = signalQuickSelectors.map((i, elem) => $(elem).val());
+    $("#signal").val(`${urgency}: ${type} ${location}`)
+}
 
 function settingsInit() : PocketBase {
     pb = init();
@@ -85,6 +90,9 @@ function settingsInit() : PocketBase {
     $(window).on("load", () => {
         const addSlogan = $("#add-slogan")
         const editSlogans = $("#edit-slogans")
+
+        // Load default values into #signal value
+        signalQuickSelect();
 
         $("#slogan-changer").on("change", function() {
             // Save old slogan state
@@ -94,6 +102,7 @@ function settingsInit() : PocketBase {
             activateSloganChanger();
         })
         $("#send-signal").on("submit", sendSignal);
+        signalQuickSelectors.on("input", signalQuickSelect);
     
         addSlogan.on("click", (e) => {
             if (!addingSlogan) {
@@ -137,8 +146,8 @@ function settingsInit() : PocketBase {
                 newLi.append(form);
                 li.replaceWith(newLi);
             })
-
         })
+
     })
 
     return pb;
