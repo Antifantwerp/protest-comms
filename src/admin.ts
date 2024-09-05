@@ -61,6 +61,16 @@ async function setupCollections() {
         reportError("Error while trying to update users collection", err);
     }
 
+
+    // Setting up collections clears slogan values. Save them here
+    let slogans: RecordModel[];
+    try {
+        slogans = await pb.collection("slogans").getFullList();   
+    }
+    catch (err) {
+        slogans = [];
+        reportError("Error while trying to get existing slogan values", err);
+    }
     
     try {
         // COLLECTION: slogans
@@ -82,6 +92,20 @@ async function setupCollections() {
         })
     } catch (err) {
         reportError("Error while trying to create/update slogans collection", err);
+    }
+
+    // Re-add slogan values
+    try {
+        if (slogans.length > 0) {
+            slogans.forEach(async (slogan) => {
+                await pb.collection("slogans").update(slogan.id, {
+                    text: slogan.text
+                });
+            })
+            success("Re-added slogan values")
+        }
+    } catch (err) {
+        reportError("Error while trying to re-add slogan values", err);
     }
 
     try {
