@@ -1,5 +1,5 @@
 import init from "./settings";
-import {success, error, warning} from "./notify";
+import {success, error, warning, reportError} from "./notify";
 
 
 const pb = init();
@@ -137,7 +137,7 @@ async function createUser(e) {
             await pb.collection("users").create(newUser(), {requestKey: null});
         }
     } catch (err) {
-        alert(err + " Please check your console for the request response.");
+        reportError(err);
     }
 }
 
