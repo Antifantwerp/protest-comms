@@ -1,4 +1,4 @@
-import PocketBase from "pocketbase";
+import PocketBase, { RecordModel } from "pocketbase";
 import {success, error, warning, init as initNotyf} from "./notify";
 
 let pb: PocketBase;
@@ -31,17 +31,43 @@ async function loginWithPassword(e) {
 }
 
 const slogans = $("#slogans ol") // TODO move up
-function addSlogan(sloganRecord) {
+function addSlogan(sloganRecord: RecordModel) {
     slogans.append(`<li id="${sloganRecord.id}">${sloganRecord.text}</li>`)
 }
 
-function updateSlogan(sloganRecord) {
+function updateSlogan(sloganRecord: RecordModel) {
     $("#" + sloganRecord.id).text(sloganRecord.text)
 }
 
-function deleteSlogan(sloganRecord) {
+function deleteSlogan(sloganRecord: RecordModel) {
     $("#" + sloganRecord.id).remove();
 }
+
+function subscribeToSloganChange(
+    addSloganElement: (sloganRecord: RecordModel) => void=addSlogan,
+    updateSloganElement: (sloganRecord: RecordModel) => void=updateSlogan,
+    deleteSloganElement: (sloganRecord: RecordModel) => void=deleteSlogan,
+) {
+    pb.collection("slogans").subscribe("*", function(data) {
+        switch (data.action) {
+            case "create":
+                addSloganElement(data.record);
+                break;
+            
+            case "update":
+                updateSloganElement(data.record);
+                break;
+
+            case "delete":
+                deleteSloganElement(data.record);
+                break;
+
+            default:
+                throw new Error("Unimplemented action: " + data.action)
+        }
+    });
+}
+
 
 async function loggedIn() {
     // Remove initial hiding class
@@ -53,25 +79,7 @@ async function loggedIn() {
     try {
         (await pb.collection("slogans").getFullList()).forEach(addSlogan);
 
-
-        pb.collection("slogans").subscribe("*", function(data) {
-            switch (data.action) {
-                case "create":
-                    addSlogan(data.record);
-                    break;
-                
-                case "update":
-                    updateSlogan(data.record);
-                    break;
-
-                case "delete":
-                    deleteSlogan(data.record);
-                    break;
-
-                default:
-                    throw new Error("Unimplemented action: " + data.action)
-            }
-        });
+        subscribeToSloganChange();
 
         pb.collection("ping").subscribe("*", function(data) {
             if (data.action == "update") {
