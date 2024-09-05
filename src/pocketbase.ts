@@ -75,8 +75,30 @@ async function loggedIn() {
 
         pb.collection("ping").subscribe("*", function(data) {
             if (data.action == "update") {
-                $(".current-slogan").removeClass("current-slogan");
-                $("#" + data.record.currentslogan).addClass("current-slogan")
+                const currentSlogan = data.record.currentslogan;
+                const message = data.record.message;
+                if (currentSlogan) {
+                    $(".current-slogan").removeClass("current-slogan");
+                    $("#" + currentSlogan).addClass("current-slogan")
+                }
+                if (message) {
+                    let urgency = message.toLowerCase().split(" ")[0].replace(":", "")
+                    switch (urgency) {
+                        case "incoming":
+                            success(message);
+                            break;
+                        case "when":
+                            warning(message);
+                            break;
+                        case "urgent":
+                            error(message);
+                            break;
+                        default:
+                            console.log("Couldn't determine urgency, send as warning")
+                            warning(message)
+                            break;
+                    }
+                }
             }
         })
     } catch (err) {

@@ -8,7 +8,7 @@ mixin select(label, options)
 
 mixin settings()
     section#send-signal
-        form
+        form(action="POST")
             h3 Send signal
             h4 Quick select
             +select("Urgency", ["Incoming",  "When possible", "Urgent", "Life-threatening" ])

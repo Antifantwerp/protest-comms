@@ -1,5 +1,6 @@
 import PocketBase from "pocketbase";
 import init from "./pocketbase";
+import { reportError } from "./notify";
 
 let pb: PocketBase;
 
@@ -71,10 +72,21 @@ async function editSlogan(e) {
     $("#slogans ol").html(oldSlogansListInner)
 }
 
-function sendSignal(e) {
+async function sendSignal(e) {
     e.preventDefault();
 
     const form = $(e.target);
+    const ping = (await pb.collection("ping").getList(1, 1)).items[0];
+    console.log(ping)
+    try {
+        const data = await pb.collection("ping").update(ping.id, {
+            message: form.children("#signal").val()
+        })
+        console.log(data)
+    }
+    catch (err) {
+        reportError(err);
+    }
     
 }
 
