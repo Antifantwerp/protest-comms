@@ -6,45 +6,76 @@ let pb: PocketBase;
 
 let addingSlogan = false;
 let oldSlogansListInner = "";
-let editorSubscription: UnsubscribeFunc;
+let editorSubscriptions: UnsubscribeFunc[] = [];
 const signalQuickSelectors = $("#send-signal select");
 
 async function changeCurrentSlogan(e) {
     const selectedRadio = $(e.target)
-    const sloganId = selectedRadio.attr("id");
+    const sloganId = selectedRadio.attr("id")?.replace("current-", "");
     const ping = (await pb.collection("ping").getList(1, 1)).items[0];
     pb.collection("ping").update(ping.id, {
         currentslogan: sloganId,
     })
 }
 
+function _createCurrentSloganEntry(sloganId: string, sloganText: string) {
+    const newLi = $(`<li></li>`);
+    const label = $(`<label for="current-${sloganId}">${sloganText}</label>`);
+    const radio = $(`<input type="radio" name="currentslogan" id="current-${sloganId}" />`);
+    radio.on("change", changeCurrentSlogan);
+
+    newLi.append(radio);
+    newLi.append(label);
+    $("#editor-current-slogan ol").append(newLi);
+}
+
 async function activateSloganChanger() {
     const slogansList = $("#slogans ol")
+    const editor = $("#editor-current-slogan");
+    
 
     if ($("#slogan-changer").is(":checked")) {
+        editor.show(400);
 
         slogansList.children().each((index, elem) => {
             const li = $(elem);
     
             const sloganId = li.attr("id");
             const sloganText = li.text();
-    
-            const container = $(`<label for="${sloganId}"></label>`);
-            const newLi = $(`<li></li>`);
-            const radio = $(`<input type="radio" name="currentslogan" id="${sloganId}" />`);
-            radio.on("change", changeCurrentSlogan)
+            if (!sloganId) {
+                error("Couldn't find sloganId from list element. See console logs for more details");
+                console.log(li);
+                return;
+            }
+            _createCurrentSloganEntry(sloganId, sloganText);
+        });
 
-            newLi.append(radio);
-            newLi.append(`<span>${sloganText}</span>`);
-            container.append(newLi);
-            li.replaceWith(container);
-        })
+        editorSubscriptions.push(await subscribeToSloganChange(
+            // Add
+            (record) => {
+                _createCurrentSloganEntry(record.id, record.text);
+            },
+            // Update
+            (record) => {
+                $("#current-" + record.id + " + label").text(record.text);
+            },
+            // Delete
+            (record) => {
+                $("#current-" + record.id).parent().remove();
+            }
+        ));
+        
+        editorSubscriptions.push(await pb.collection("ping").subscribe("*", function(data) {
+            if (data.action == "update") {
+                const currentSlogan = data.record.currentslogan;
+                if (currentSlogan) {
+                    // Removing current-slogan is taken care of by original subscribe
+                    $("#current-" + currentSlogan).parent().addClass("current-slogan")
+                }
+            }
+        }))
     } else {
-        // TODO: better solution than this. Done because slogans might have changed from oldSlogansListInner
-        if (slogansList.html() != oldSlogansListInner) {
-            window.location.reload();
-
-        }
+        editorCleanup();
     }
 }
 
@@ -163,7 +194,7 @@ async function onClickEditSlogans() {
         _createAddSloganForm(sloganId, sloganText);
     });
 
-    editorSubscription = await subscribeToSloganChange(
+    editorSubscriptions.push(await subscribeToSloganChange(
         // Add
         (record) => {
             _createAddSloganForm(record.id, record.text);
@@ -176,12 +207,13 @@ async function onClickEditSlogans() {
         (record) => {
             $(`form[data-slogan-id="${record.id}"]`).parent().remove();
         }
-    );
+    ));
 }
 
 function editorCleanup() {
-    if ($("#editor-change-slogans ol").children().length || $("#editor-current-slogan ol").children().length) {
-        editorSubscription(); // Run unsubscribe func
+    if (editorSubscriptions.length > 0) {
+        editorSubscriptions.forEach(async (unsubscribe) => await unsubscribe())
+        editorSubscriptions = [];
         $("#editor-change-slogans ol").empty();
         $("#editor-current-slogan ol").empty();
         $("#editor-change-slogans").hide(400);
