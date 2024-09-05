@@ -73,7 +73,8 @@ async function loggedIn() {
     // Remove initial hiding class
     // Hide loading & login
     $("#loading").hide();
-    $("#loginForm").hide();        
+    $("#loginForm").hide();     
+    $("#logout").show();   
 
 
     try {
