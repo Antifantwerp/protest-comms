@@ -46,30 +46,36 @@ function error(msg) {
     notyf.error(msg);
 }
 
-function _unidentifiedError(err) {
+function _unidentifiedError(err: Error) {
     // The Pocketbase errors embed weirdly in console. For full info, log a stringify
     console.log(JSON.stringify(err));
     return UNIDENTIFIED_ERROR_MESSAGE;
 }
 
-function reportError(err: Error) {
+function reportError(label: string, err: Error) {
     let message = "";
     if (err instanceof ClientResponseError) {
         const errData = err.response.data;
-        Object.keys(errData).forEach((key) => {
-            switch(key) {
-                case "passwordConfirm":
-                    message = "PIN codes do not match!"
-                    break;
-                default:
-                    message = _unidentifiedError(err);
-                    break;
-            }
-        })
+        const errDataKeys = Object.keys(errData);
+
+        if (errDataKeys.length < 0) {
+            errDataKeys.forEach((key) => {
+                switch(key) {
+                    case "passwordConfirm":
+                        message = "PIN codes do not match!"
+                        break;
+                    default:
+                        message = _unidentifiedError(err);
+                        break;
+                }
+            }) 
+        } else {
+            message = err.message;
+        }
     } else {
         message = _unidentifiedError(err);
     }
-    error(message);
+    error(label + ": " + message);
 }
 
 export {init,success,warning,error,reportError}

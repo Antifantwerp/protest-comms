@@ -58,7 +58,7 @@ async function setupCollections() {
         });
         success(`Setup permission for collection ${data.name}! (ID: ${data.id})`)
     } catch (err) {
-        reportError(err);
+        reportError("Error while trying to update users collection", err);
     }
 
     
@@ -81,7 +81,7 @@ async function setupCollections() {
             deleteRule: ruleAllowOnlyChaperoneAndAdmins,
         })
     } catch (err) {
-        reportError(err);
+        reportError("Error while trying to create/update slogans collection", err);
     }
 
     try {
@@ -113,7 +113,7 @@ async function setupCollections() {
             deleteRule: ALLOW_ONLY_ADMINS,
         })
     } catch (err) {
-        reportError(err);
+        reportError("Error while creating/updating ping collection", err);
     }
     
     try {
@@ -126,7 +126,7 @@ async function setupCollections() {
             currentslogan: [],
         })
     } catch (err) {
-        reportError(err);
+        reportError("Error while cleaning up old pings", err);
     }
 }
 
@@ -164,11 +164,21 @@ async function createUser(e) {
         }
         success(`PIN set for ${user.username}!`);
     } catch (err) {
-        reportError(err);
+        reportError("Error while setting pin for " + username, err);
     }
 }
 
-$(window).on("load", function() {
+$(window).on("load", async function() {
     $("#setup-collections").on("click", setupCollections);
     $(".userForm").on("submit", createUser);
+
+    try {
+        const slogans = await pb.collections.getOne(pb.collection("slogans").collectionIdOrName);
+        console.log(slogans.viewRule)
+        if (slogans.viewRule != ALLOW_EVERYONE) {
+            $("#require-login").prop("checked", true)
+        }
+    } catch (err) {
+        reportError("Error while trying to get slogans collection", err);
+    }
 });

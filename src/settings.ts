@@ -85,7 +85,7 @@ async function onSubmitSendSignal(e) {
         console.log(data)
     }
     catch (err) {
-        reportError(err);
+        reportError("Error while sending signal", err);
     }
     
 }
