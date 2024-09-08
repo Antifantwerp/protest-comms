@@ -4,11 +4,24 @@ html(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        
         title Protest Communicator
+
+        meta(property="og:title" content="Protest Communicator")
+        meta(property="og:type" content="website")
+        meta(property="og:url" content="https://protest.antifantwerp.org/")
+        meta(property="og:image" content="assets/antifa.png")
+        meta(property="og:image:width" content="400")
+        meta(property="og:image:height" content="400")
+        meta(property="og:image:alt" content="The logo for Antifa Antwerp. A black flag in front of a red flag in a black circle, with white text on top saying Antifa, and white text on the bottom saying Antwerp")
+
         link(rel="stylesheet", href="/node_modules/@picocss/pico/css/pico.min.css")
         link(rel="stylesheet", href="/node_modules/notyf/notyf.min.css")
         link(rel="stylesheet", href="/src/index.scss")
+        
         script(src="~/node_modules/jquery/dist/jquery.min.js") 
+        
+    
     body
         header
             h1 Protest Communicator

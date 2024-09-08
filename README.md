@@ -42,6 +42,9 @@ See [the instructions to set up Pocketbase](https://pocketbase.io/docs/).
 6. Enable/disable *Require PIN for viewing slogans* as wanted, and then press *Setup collections*. This will create the `slogans` and `ping` collections.
 7. Done! You and *chaperones* can both add/edit/remove slogans as wanted.
 
+### Changing public url
+As of writing, there are two hardcoded `https://protest.antifantwerp.org` URL values in this project. One is in [package.json](package.json), and one is in [src/layouts/_layout.pug](src/layouts/_layout.pug). If you're deploying elsewhere, be sure to replace them. If you know a somewhat clean solution to remove these hardcodes, please feel free to open a PR.
+
 ## Explanation
 ### Permissions
 

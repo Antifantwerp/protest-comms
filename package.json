@@ -7,7 +7,7 @@
     "shortName": "Protest Comms",
     "theme": "#ff0000",
     "generateIconOptions": {
-      "baseIcon": "./assets/antifa.svg",
+      "baseIcon": "./src/assets/antifa.svg",
       "genFavicons": true
     }
   },
@@ -16,7 +16,7 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel",
-    "build": "parcel build",
+    "build": "parcel build --public-url https://protest.antifantwerp.org/",
     "clean": "rm -rf .{parcel-cache,dist}/"
   },
   "devDependencies": {
