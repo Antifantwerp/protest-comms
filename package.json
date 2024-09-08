@@ -2,6 +2,15 @@
   "name": "protest-comms",
   "version": "0.6.0",
   "description": "Coordinate slogans, moving, and communicate the needs of your group",
+  "pwaManifest": {
+    "name": "Protest Communicator",
+    "shortName": "Protest Comms",
+    "theme": "#ff0000",
+    "generateIconOptions": {
+      "baseIcon": "./assets/antifa.svg",
+      "genFavicons": true
+    }
+  },
   "source": "src/index.pug",
   "author": "Pigeon",
   "license": "MIT",
@@ -11,12 +20,15 @@
     "clean": "rm -rf .{parcel-cache,dist}/"
   },
   "devDependencies": {
+    "@parcel/packager-raw-url": "2.12.0",
+    "@parcel/packager-xml": "2.12.0",
     "@parcel/transformer-inline-string": "2.12.0",
     "@parcel/transformer-pug": "2.12.0",
     "@parcel/transformer-sass": "2.12.0",
     "@types/jquery": "^3.5.30",
     "@types/node": "^22.5.3",
     "parcel": "^2.12.0",
+    "parcel-config-pwa-manifest": "^0.1.6",
     "pocketbase": "^0.21.5",
     "prompt-sync": "^4.2.0"
   },
