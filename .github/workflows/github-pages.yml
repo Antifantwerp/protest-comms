@@ -38,6 +38,7 @@ jobs:
         run: yarn build
         env:
           POCKETBASE_URL: ${{ secrets.POCKETBASE_URL }}
+          HOST: ${{ secrets.HOST }}
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

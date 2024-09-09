@@ -4,6 +4,8 @@ html(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+        //meta(http-equiv="Content-Security-Policy" content=`base-uri 'self'; default-src 'self'; connect-src ${env.POCKETBASE_URL}; style-src-attr 'unsafe-inline';`)
         
         title Protest Communicator
         - const description = "Coordinate slogans, when to move, and communicate the needs of your group in real time during a protest";
@@ -13,7 +15,7 @@ html(lang="en")
         meta(property="og:title" content="Protest Communicator")
         meta(property="og:description" content=description)
         meta(property="og:type" content="website")
-        meta(property="og:url" content="https://protest.antifantwerp.org/")
+        meta(property="og:url" content=env.HOST)
         meta(property="og:image" content="assets/antifa.png")
         meta(property="og:image:width" content="400")
         meta(property="og:image:height" content="400")
@@ -27,6 +29,7 @@ html(lang="en")
         
     
     body
+        p=process.env.POCKETBASE_URL
         header
             h1 Protest Communicator
 
