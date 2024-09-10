@@ -26,7 +26,13 @@ function init() {
             {
                 type: "warning",
                 ripple: false,
-                background: "yellow"
+                className: "black-text",
+                background: "#FFEA53"
+            },
+            {
+                type: "info",
+                ripple: true,
+                background: "#0505FF"
             }
         ]
     });
@@ -38,6 +44,12 @@ function success(msg) {
 function warning(msg) {
     notyf.open({
         type: "warning",
+        message: msg
+    });
+}
+function info(msg) {
+    notyf.open({
+        type: "info",
         message: msg
     });
 
@@ -78,4 +90,4 @@ function reportError(label: string, err: Error) {
     error(label + ": " + message);
 }
 
-export {init,success,warning,error,reportError}
+export {init,success,warning,error,info,reportError}

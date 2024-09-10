@@ -1,5 +1,5 @@
 import PocketBase, { RecordModel } from "pocketbase";
-import {success, error, warning, init as initNotyf} from "./notify";
+import {success, error, warning, info, init as initNotyf} from "./notify";
 
 let pb: PocketBase;
 
@@ -91,21 +91,18 @@ async function loggedIn() {
                     $("#" + currentSlogan).addClass("current-slogan")
                 }
                 if (message) {
-                    let urgency = message.toLowerCase().split(" ")[0].replace(":", "")
-                    switch (urgency) {
-                        case "incoming":
-                            success(message);
-                            break;
-                        case "when":
-                            warning(message);
-                            break;
-                        case "urgent":
-                            error(message);
-                            break;
-                        default:
-                            console.log("Couldn't determine urgency, send as warning")
-                            warning(message)
-                            break;
+                    const msg = message.toLowerCase();
+                    if (msg.includes("urgent") || msg.includes("life-threatening") || msg.includes("police")) {
+                        error(message)
+                    } else if (msg.includes("when possible")) {
+                        warning(message)
+                    }
+                    else if (msg.includes("incoming")) {
+                        info(message);
+                    }
+                    else {
+                        console.log("Couldn't determine urgency, send as info");
+                        info(message);
                     }
                 }
             }
