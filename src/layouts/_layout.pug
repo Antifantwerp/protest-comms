@@ -5,7 +5,21 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
 
-        //meta(http-equiv="Content-Security-Policy" content=`base-uri 'self'; default-src 'self'; connect-src ${env.POCKETBASE_URL}; style-src-attr 'unsafe-inline';`)
+        -
+            // Based on https://web.dev/articles/strict-csp#structure
+            let csp = "base-uri 'none'";
+            csp += "; default-src 'none'"
+            csp += "; connect-src " + env.POCKETBASE_URL
+            if (env.NODE_ENV == "development") {
+                csp += " ws://localhost:1234";  // Parcel HMR
+                csp += "; script-src 'unsafe-eval'";  // Parcel HMR
+            }
+            csp += "; style-src 'self'";
+            csp += "; style-src-attr 'unsafe-inline'"; // TODO: remove
+            csp += "; img-src 'self'";
+            csp += " data: w3.org/svg/2000"  // Allow inline SVG https://stackoverflow.com/a/71570527
+        
+        meta(http-equiv="Content-Security-Policy" content=csp)
         
         title Protest Communicator
         - const description = "Coordinate slogans, when to move, and communicate the needs of your group in real time during a protest";
