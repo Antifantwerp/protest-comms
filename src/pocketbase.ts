@@ -121,7 +121,6 @@ async function loggedIn() {
     let usr = pb.authStore.model ? pb.authStore.model.username : "";
     if (usr == "chaperone" || pb.authStore.isAdmin) {
         $("#send-signal").show(400)
-        $("#settings").show(400)
     }
 
     if (pb.authStore.isAdmin) {

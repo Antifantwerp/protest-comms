@@ -222,8 +222,6 @@ function editorCleanup() {
         editorSubscriptions = [];
         $("#editor-change-slogans ol").empty();
         $("#editor-current-slogan ol").empty();
-        $("#editor-change-slogans").hide(400);
-        $("#editor-current-slogan").hide(400);
         return true;
     } else {
         return false;
