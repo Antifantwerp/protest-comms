@@ -1,10 +1,15 @@
 body {
     font-size: 16px;
 }
+ol {
+    padding: 0;
+}
 
 main {
     width: 95%;
     margin: auto;
+    text-align: center;
+    list-style-position: inside;
 }
 
 header, footer {
@@ -33,6 +38,7 @@ header, footer {
     }
     #loading {
         display: initial;
+        font-size: 2em;
     }
 }
 
@@ -42,11 +48,12 @@ header, footer {
     font-weight: bold;
 }
 
-#slogans ol {
+#slogans ol, #editor-current-slogan ol {
     display: flex;
     flex-direction: column;
     gap: 15px;
     > * {
+        width: 100%;
         height: 5rem;
         line-height: 4.5rem;
 

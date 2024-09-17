@@ -19,14 +19,16 @@ async function changeCurrentSlogan(e) {
 }
 
 function _createCurrentSloganEntry(sloganId: string, sloganText: string) {
+    const label = $(`<label for="current-${sloganId}"></label>`);
     const newLi = $(`<li></li>`);
-    const label = $(`<label for="current-${sloganId}">${sloganText}</label>`);
     const radio = $(`<input type="radio" name="currentslogan" id="current-${sloganId}" />`);
+    const span = $(`<span>${sloganText}</span>`)
     radio.on("change", changeCurrentSlogan);
 
     newLi.append(radio);
-    newLi.append(label);
-    $("#editor-current-slogan ol").append(newLi);
+    newLi.append(span);
+    label.append(newLi);
+    $("#editor-current-slogan ol").append(label);
 }
 
 async function activateSloganChanger() {

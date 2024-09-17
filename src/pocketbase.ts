@@ -71,6 +71,7 @@ function subscribeToSloganChange(
 
 async function loggedIn() {
     // Remove initial hiding class
+    $("main").removeClass("loading");
     // Hide loading & login
     $("#loading").hide();
     $("#loginForm").hide();     
@@ -143,12 +144,7 @@ function init(justReturnPb=false, tryWithoutAuth=false): PocketBase {
         return pb;
     }
 
-    $(window).on("load", async function() {
-        // Hide everything
-        $("main").children().hide();
-    
-        $("main").removeClass("loading");
-        
+    $(window).on("load", async function() {        
         // If not logged in
         if (!pb.authStore.isValid) {
             // For index/attendee page, still try without auth
