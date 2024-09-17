@@ -24,15 +24,13 @@ mixin settings()
 
     section#editor-current-slogan
         h2 Editor: Change current slogan
-        label(for="slogan-changer")
-            input(type="checkbox" name="slogan-changer" id="slogan-changer")
-            span Enable current slogan changer
+        input(type="button" aria-pressed="false" name="slogan-changer" id="slogan-changer" value="Enable current slogan changer")
         ol
 
 
     section#editor-change-slogans
         h2 Editor: Change slogans
         fieldset
-            input(type="button" value="Add slogan")#add-slogan
-            input(type="button" value="Edit slogans")#edit-slogans
+            input(type="button" aria-pressed="false" value="Add slogan")#add-slogan
+            input(type="button" aria-pressed="false" value="Edit slogans")#edit-slogans
         ol

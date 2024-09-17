@@ -5,7 +5,6 @@ import { error, reportError } from "./notify";
 let pb: PocketBase;
 
 let addingSlogan = false;
-let oldSlogansListInner = "";
 let editorSubscriptions: UnsubscribeFunc[] = [];
 const signalQuickSelectors = $("#send-signal select");
 
@@ -31,12 +30,11 @@ function _createCurrentSloganEntry(sloganId: string, sloganText: string) {
     $("#editor-current-slogan ol").append(label);
 }
 
-async function activateSloganChanger() {
+async function activateSloganChanger(activate:boolean) {
     const slogansList = $("#slogans ol")
-    const editor = $("#editor-current-slogan");
-    
+    const editor = $("#editor-current-slogan");    
 
-    if ($("#slogan-changer").is(":checked")) {
+    if (activate) {
         editor.show(400);
 
         slogansList.children().each((index, elem) => {
@@ -134,12 +132,22 @@ function onInputSignalQuickSelect() {
     $("#signal").val(`${urgency}: ${type} ${location}`)
 }
 
-function onChangeSloganChanger() {
-    // Save old slogan state
-    if (oldSlogansListInner == "") {
-        oldSlogansListInner = $("#slogans ol").html();
+function toggleButton(selector: string) {
+    const button = $(selector);
+    const wasPressed = button.attr("aria-pressed") === "true";
+    if (wasPressed) {
+        button.attr("aria-pressed", "false").removeClass("outline");
+        return false;
+    } else {
+        button.attr("aria-pressed", "true").addClass("outline");
+        return true;
     }
-    activateSloganChanger();
+}
+
+function onClickSloganChanger() {
+    const activate = toggleButton("#slogan-changer");
+
+    activateSloganChanger(activate);
 }
 
 function onClickAddSlogan(e) {
@@ -235,7 +243,7 @@ function settingsInit() : PocketBase {
         // Load default values into #signal value
         onInputSignalQuickSelect();
 
-        $("#slogan-changer").on("change", onChangeSloganChanger);
+        $("#slogan-changer").on("click", onClickSloganChanger);
         $("#send-signal").on("submit", onSubmitSendSignal);
         signalQuickSelectors.on("input", onInputSignalQuickSelect);
     
