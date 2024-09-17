@@ -116,7 +116,11 @@ async function onSubmitSendSignal(e) {
         const data = await pb.collection("ping").update(ping.id, {
             message: form.children("#signal").val()
         })
-        console.log(data)
+        setTimeout(async function() {
+            await pb.collection("ping").update(ping.id, {
+                message: null
+            })
+        }, 4000)
     }
     catch (err) {
         reportError("Error while sending signal", err);
