@@ -56,6 +56,5 @@ See [the instructions to set up Pocketbase](https://pocketbase.io/docs/).
 
 
 ## License
-The field of ethical software licensing is still growing. 
-
+The field of ethical software licensing is still growing. If down the road some vetted/concrete examples pop up, it might be worth moving towards for projects. But until that happens, all code is licensed under the [MIT License](LICENSE).
 
