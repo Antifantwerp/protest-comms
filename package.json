@@ -1,6 +1,6 @@
 {
   "name": "protest-comms",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Coordinate slogans, moving, and communicate the needs of your group",
   "pwaManifest": {
     "name": "Protest Communicator",
@@ -25,19 +25,15 @@
     "@parcel/transformer-inline-string": "2.12.0",
     "@parcel/transformer-pug": "2.12.0",
     "@parcel/transformer-sass": "2.12.0",
+    "@picocss/pico": "^2.0.6",
     "@types/jquery": "^3.5.30",
     "@types/node": "^22.5.3",
     "cross-env": "^7.0.3",
+    "jquery": "^3.7.1",
+    "notyf": "^3.10.0",
     "parcel": "^2.12.0",
     "parcel-config-pwa-manifest": "^0.1.6",
     "parcel-reporter-strict-csp": "^0.1.1",
-    "pocketbase": "^0.21.5",
-    "prompt-sync": "^4.2.0"
-  },
-  "dependencies": {
-    "@picocss/pico": "^2.0.6",
-    "jquery": "^3.7.1",
-    "notyf": "^3.10.0",
-    "svg-loaders": "^0.2.0"
+    "pocketbase": "^0.21.5"
   }
 }
