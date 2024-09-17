@@ -134,8 +134,8 @@ function onInputSignalQuickSelect() {
 
 function toggleButton(selector: string) {
     const button = $(selector);
-    const wasPressed = button.attr("aria-pressed") === "true";
-    if (wasPressed) {
+    const unpressing = button.attr("aria-pressed") === "true";
+    if (unpressing) {
         button.attr("aria-pressed", "false").removeClass("outline");
         return false;
     } else {
@@ -155,13 +155,14 @@ function onClickAddSlogan(e) {
     if (!addingSlogan) {
         addSlogan.before(`<label for="new-slogan" id="new-slogan-label" />`)
                  .before(`<input type="text" id="new-slogan" name="new-slogan" placeholder="New slogan text..." />`)
-        addSlogan.val("Save new slogan");
+        addSlogan.val("Save new slogan").addClass("outline");
     } else {
         pb.collection("slogans").create({
             text: $("#new-slogan").val()
         });
         $("#new-slogan").remove();
         $("#new-slogan-label").remove();
+        addSlogan.val("Add slogan").removeClass("outline")
     }
     addingSlogan = !addingSlogan;
 }
@@ -191,6 +192,7 @@ function _createAddSloganForm(sloganId: string, sloganText: string) {
 
 async function onClickEditSlogans() {
     const slogansList = $("#slogans ol");
+    toggleButton("#edit-slogans")
 
     if (editorCleanup()) {
         return;
