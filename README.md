@@ -46,6 +46,27 @@ See [the instructions to set up Pocketbase](https://pocketbase.io/docs/).
 7. Done! You and *chaperones* can both add/edit/remove slogans as wanted.
 
 ## Explanation
+### The (chaperone) userlend system
+> Note: this is all technical information, and not something you have to deal with as a user. This is added for documentation & clarity
+
+During the first run with protest-comms, it became clear that perhaps having multiple people logged into the same account at the same time could give some issues. However:
+1. Creating multiple custom chaperone accounts would require way more manual setup, as well as immensely slow things down when someone unexpectedly joins the chaperones.
+2. Having individual nicknames would allow more clear communication between chaperones.
+3. The one-chaperone-account system allowed everyone to log in with the same pin. Having them have to enter an already-existing username would
+slow things down (e.g. 1.)
+4. An invite system or allowing chaperones to create new chaperones on the fly would also slow things down (e.g. 1.)
+
+So instead of that, the userlend system has been made!
+1. When the chaperone password is set, all existing chaperone users will be removed
+2. Chaperone password setting now includes an input for entering *how many* chaperones you want there to be at maxmimum. This creates `chaperone0`, `chaperone1`, ... until the provided amount has been reached. They all have `is_chaperone` set to true
+3. The `users` collection now allows non-verified listing for users that start with the name `chaperone`
+4. Chaperones enter their desired username and the chaperone PIN set by the admins
+5. First of all, the login will be tried exactly as provided: desired username & pin
+6. If this doesn't work, list all generated chaperone accounts (see 2. & 3.) 
+7. Iterate over the temporary accounts and try to log in
+8. If the password is correct, the chaperone account will update its own username to the desired username. This allows for logging back into the lended account (see 5.)
+9. If the password is wrong, it'll simply not work, as expected. 
+
 ### Permissions
 
 
