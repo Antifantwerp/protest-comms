@@ -9,6 +9,8 @@ const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocket
 const ALLOW_IF_SELF = "id = @request.auth.id";
 const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 const ALLOW_EVERYONE = "";  // empty allows everyone, no matter if logged in
+const ALLOW_ONLY_CHAPERONE_AND_ADMINS = `@request.auth.is_chaperone = true"`
+
 
 async function createOrUpdateCollection(collectionId, schema) {
     let data: CollectionModel|null = null;
@@ -33,15 +35,7 @@ async function createOrUpdateCollection(collectionId, schema) {
 async function setupCollections() {
     const requirePINForViewingSlogans = $("#require-login").is(":checked");
 
-    const chaperone = (await pb.collection("users").getFullList()).find(iser => iser.username == "chaperone")
-
-    if (!chaperone) {
-        error("Please create the chaperone user first by setting a PIN code for it below");
-        return;
-    }
     const sloganViewOrListPermission = requirePINForViewingSlogans ? ALLOW_ONLY_REGISTERED_USERS : ALLOW_EVERYONE;
-    const ruleAllowOnlyChaperoneAndAdmins = `@request.auth.id = "${chaperone.id}"`
-
 
     try {
         // COLLECTION: users
@@ -52,6 +46,7 @@ async function setupCollections() {
                     type: "bool"
                 },
             ],
+            listRule: `${ALLOW_IF_SELF} || username ~ "chaperone%"`,  // If starts with chaperone
             createRule: ALLOW_ONLY_ADMINS,
             updateRule: ALLOW_IF_SELF,
             deleteRule: ALLOW_ONLY_ADMINS,
@@ -92,9 +87,9 @@ async function setupCollections() {
             ],
             listRule: sloganViewOrListPermission,
             viewRule: sloganViewOrListPermission,
-            createRule: ruleAllowOnlyChaperoneAndAdmins,
-            updateRule: ruleAllowOnlyChaperoneAndAdmins,
-            deleteRule: ruleAllowOnlyChaperoneAndAdmins,
+            createRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
+            updateRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
+            deleteRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
         })
     } catch (err) {
         reportError("Error while trying to create/update slogans collection", err);
@@ -139,7 +134,7 @@ async function setupCollections() {
             listRule: sloganViewOrListPermission,
             viewRule: sloganViewOrListPermission,
             createRule: ALLOW_ONLY_ADMINS,
-            updateRule: ruleAllowOnlyChaperoneAndAdmins,
+            updateRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
             deleteRule: ALLOW_ONLY_ADMINS,
         })
     } catch (err) {

@@ -2,7 +2,7 @@ import PocketBase, { RecordModel } from "pocketbase";
 import {success, error, warning, info, init as initNotyf} from "./notify";
 
 let pb: PocketBase;
-let lendUsername = false;
+let lendUsernameGlobal = false;
 
 async function loginWithPassword(e) {
     e.preventDefault();
@@ -11,29 +11,38 @@ async function loginWithPassword(e) {
     const passInput: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
     const tryAdminLogin = $("#try-admin-login").is(":checked")
 
+    console.log(lendUsernameGlobal)
     async function login(suffix="") {
         const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
         try {
             // @ts-ignore
-            return await login.authWithPassword(username + suffix, passInput.value);
+            return {success:true, data: await login.authWithPassword(username + suffix, passInput.value)};
         } catch (err) {
             error(err.response.message);
-            return err;
+            return {success:false, data: err};
         }
     }
 
     if (passInput.value) {
-        if (!lendUsername) {
-            //for (let i=0; )
-            login()
+        let auth: {success:boolean, data:any};
+        if (!lendUsernameGlobal) {
+            auth = await login();
+        
+        } else {
+            const users = await pb.collection("users").getFullList();
+            console.log(users)
+            return;
+            auth = await login();
+        }
+        
+        if (auth.success) {
+            success("Logged in!")
+            const loginForm = (document.getElementById("loginForm") as HTMLElement);
+            loginForm.style.display = "none";
+            loggedIn();
         }
         
 
-        
-        success("Logged in!")
-        const loginForm = (document.getElementById("loginForm") as HTMLElement);
-        loginForm.style.display = "none";
-        loggedIn();
     }
 }
 
@@ -145,7 +154,7 @@ async function loggedIn() {
     }
 }
 function init({justReturnPb=false, tryWithoutAuth=false, lendUsername=false}): PocketBase {
-    lendUsername = lendUsername;  // Set global
+    lendUsernameGlobal = lendUsername;
     // Init notifications
     initNotyf();
 
