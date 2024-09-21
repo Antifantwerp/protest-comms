@@ -1,5 +1,5 @@
 //- Login form
-mixin login(username)
+mixin login(username, lendUser, adminLogin=false)
     form#loginForm
         if username
             h2 #{username} login
@@ -7,11 +7,15 @@ mixin login(username)
             label(for="password") Enter PIN:
 
         else
-            h2 Login
-            input(id="username" name="username" placeholder="username/user@example.com")
+            h2 Login #{lendUser}
+            if !lendUser
+                input(id="username" name="username" placeholder="username/user@example.com")
+            else 
+                label(for="username") Desired nickname
+                input(id="username" name="username" placeholder="Your nickname here...")
             label(for="password") Enter password:
 
         input(id="password" name="password" type="password" placeholder="12345")
 
-        input(type="checkbox" name="try-admin-login" id="try-admin-login" style="display:none;" checked=!Boolean(username))
+        input(type="checkbox" name="try-admin-login" id="try-admin-login" style="display:none;" checked=adminLogin)
         input(type="submit" value="Login" id="login")

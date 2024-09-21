@@ -4,35 +4,41 @@ import {success, error, warning, info, init as initNotyf} from "./notify";
 let pb: PocketBase;
 let lendUsernameGlobal = false;
 
+async function login(username: string, passInput:HTMLElement, tryAdminLogin=false) {
+    const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
+    try {
+        // @ts-ignore
+        return {success:true, data: await login.authWithPassword(username, passInput.value)};
+    } catch (err) {
+        error(err.response.message);
+        return {success:false, data: err};
+    }
+}
+
 async function loginWithPassword(e) {
     e.preventDefault();
     
-    const username =  $("#username").val();
+    const username =  $("#username").val() as string;
     const passInput: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
     const tryAdminLogin = $("#try-admin-login").is(":checked")
 
-    console.log(lendUsernameGlobal)
-    async function login(suffix="") {
-        const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
-        try {
-            // @ts-ignore
-            return {success:true, data: await login.authWithPassword(username + suffix, passInput.value)};
-        } catch (err) {
-            error(err.response.message);
-            return {success:false, data: err};
-        }
-    }
-
     if (passInput.value) {
-        let auth: {success:boolean, data:any};
+        let auth: {success:boolean, data:any} = {success: false, data: {}};
         if (!lendUsernameGlobal) {
-            auth = await login();
-        
+            auth = await login(username, passInput, tryAdminLogin);        
         } else {
-            const users = await pb.collection("users").getFullList();
-            console.log(users)
-            return;
-            auth = await login();
+            const chaperones = await pb.collection("users").getFullList();
+            let i = 0;
+            for (let i = 0; i < chaperones.length; i++) {
+                console.log(`Trying ${chaperones[i].username} (id: ${chaperones[i].id})`)
+                auth = await login(chaperones[i].username, passInput, tryAdminLogin);
+                if (auth.success) {
+                    break;
+                }
+            }
+            if (!auth.success) {
+                error("Couldn't lend username!");
+            }
         }
         
         if (auth.success) {
