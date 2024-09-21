@@ -3,14 +3,19 @@ extends layouts/_layout.pug
 include layouts/login.pug
 include layouts/settings.pug
 
-mixin userForm(username)
+mixin userForm(username, is_chaperone=false)
     form(action="POST" id=username).userForm
         label(for="password")=`${username} PIN:`
         input(type="password" name="password" placeholder="12345" minlength="5" required=true).password
 
         label(for="password-confirm")=`${username} PIN (confirm):`
         input(type="password" name="password-confirm" placeholder="12345" minlength="5" required=true).passwordConfirm
-        
+
+        if is_chaperone
+            label(for="chaperone-amount") Maximum amount of chaperones?
+            input(type="chaperone-amount" placeholder=20)
+            p Note that setting the chaperone pin will reset all chaperone users!
+            
         input(type="submit" class="username-change" value=`Change ${username} password`)
 
 block nav
@@ -36,7 +41,7 @@ block content
 
         h3 Change PIN
         section#user-forms.grid
-            +userForm("chaperone")
+            +userForm("chaperone", true)
             +userForm("attendee")
 
     script(src="/src/admin.ts" type="module") 

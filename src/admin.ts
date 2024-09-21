@@ -6,6 +6,7 @@ import { CollectionModel, RecordModel } from "pocketbase";
 const pb = init();
 
 const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocketbase.io/docs/api-rules-and-filters#examples
+const ALLOW_IF_SELF = "id = @request.auth.id";
 const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 const ALLOW_EVERYONE = "";  // empty allows everyone, no matter if logged in
 
@@ -45,9 +46,14 @@ async function setupCollections() {
     try {
         // COLLECTION: users
         const data = await pb.collections.update("users", {
-            schema: [],
+            schema: [
+                {
+                    name: "is_chaperone",
+                    type: "bool"
+                },
+            ],
             createRule: ALLOW_ONLY_ADMINS,
-            updateRule: ALLOW_ONLY_ADMINS,
+            updateRule: ALLOW_IF_SELF,
             deleteRule: ALLOW_ONLY_ADMINS,
             options: {
                 allowOAuth2Auth: false,
@@ -154,22 +160,29 @@ async function setupCollections() {
     }
 }
 
-
-
-async function createUser(e) {
+async function createUserOnForm(e) {
     e.preventDefault();
-
     const form = $(e.target);
     const username = form.attr("id");
     function password() {
-        return form.children(".password").val();
+        return form.children(".password").val() as string;
     }
     function passwordConfirm() {
-        return form.children(".passwordConfirm").val();
+        return form.children(".passwordConfirm").val() as string;
     }
+    if (!username) {
+        error("Username is missing when creating user");
+        throw Error(e);
+    }
+    createUser(username, password, passwordConfirm);
+}
+
+// Keep the passwords outside of variables
+async function createUser(username: string, password: () => string, passwordConfirm: () => string) {
     function newUser() {
         return {
             username: username,
+            is_chaperone: username.includes("chaperone"),
             password: password(),
             passwordConfirm: passwordConfirm()
         };
@@ -198,7 +211,7 @@ function onRequireLoginChange() {
 
 $(window).on("load", async function() {
     $("#setup-collections").on("click", setupCollections);
-    $(".userForm").on("submit", createUser);
+    $(".userForm").on("submit", createUserOnForm);
     $("#require-login").on("change", onRequireLoginChange);
 
     try {
