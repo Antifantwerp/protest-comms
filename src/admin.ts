@@ -10,6 +10,7 @@ const ALLOW_IF_SELF = "id = @request.auth.id";
 const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 const ALLOW_EVERYONE = "";  // empty allows everyone, no matter if logged in
 const ALLOW_ONLY_CHAPERONE_AND_ADMINS = `@request.auth.is_chaperone = true"`
+const ALLOW_IF_IS_CHAPERONE_IS_NOT_SET = "@request.data.is_chaperone:isset = false";
 
 
 async function createOrUpdateCollection(collectionId, schema) {
@@ -48,7 +49,7 @@ async function setupCollections() {
             ],
             listRule: `${ALLOW_IF_SELF} || username ~ "chaperone%"`,  // If starts with chaperone
             createRule: ALLOW_ONLY_ADMINS,
-            updateRule: ALLOW_IF_SELF,
+            updateRule: `${ALLOW_IF_SELF} && ${ALLOW_IF_IS_CHAPERONE_IS_NOT_SET}`,
             deleteRule: ALLOW_ONLY_ADMINS,
             options: {
                 allowOAuth2Auth: false,

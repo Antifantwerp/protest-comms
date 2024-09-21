@@ -38,6 +38,17 @@ async function loginWithPassword(e) {
             }
             if (!auth.success) {
                 error("Couldn't lend username!");
+            } else {
+                if (pb.authStore.model) {
+                    try {
+                        await pb.collection("users").update(pb.authStore.model.id, {
+                            username: username
+                        })
+                    } catch (e) {
+                        console.log("Error while changing username")
+                        console.log(e)
+                    }
+                }
             }
         }
         
