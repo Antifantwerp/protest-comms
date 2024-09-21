@@ -54,12 +54,16 @@ header, footer {
     gap: 15px;
     > * {
         width: 100%;
-        height: 5rem;
-        line-height: 4.5rem;
+        min-height: 5rem;
+        
+        /* TODO: better centering solution? */
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
 
         $border: 1px groove rgb(221, 221, 221);
         border-top: $border;
         border-bottom: $border;
+
     }
 }
 
