@@ -1,4 +1,4 @@
 import PocketBase from "pocketbase";
 import init from "./settings";
 
-const pb: PocketBase = init();
+const pb: PocketBase = init({lendUsername: true});

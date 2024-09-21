@@ -1,3 +1,3 @@
 import { init } from "./pocketbase";
 
-const pb = init(false, true);
+const pb = init({justReturnPb:false, tryWithoutAuth:false});

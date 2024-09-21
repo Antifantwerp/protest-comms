@@ -238,8 +238,8 @@ function editorCleanup() {
     }
 }
 
-function settingsInit() : PocketBase {
-    pb = init();
+function settingsInit({lendUsername=false}) : PocketBase {
+    pb = init({lendUsername: lendUsername});
 
     $(window).on("load", () => {
         // Load default values into #signal value

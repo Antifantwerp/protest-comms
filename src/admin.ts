@@ -3,7 +3,7 @@ import {success, error, warning, info, reportError} from "./notify";
 import { CollectionModel, RecordModel } from "pocketbase";
 
 
-const pb = init();
+const pb = init({lendUsername: false});
 
 const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocketbase.io/docs/api-rules-and-filters#examples
 const ALLOW_IF_SELF = "id = @request.auth.id";

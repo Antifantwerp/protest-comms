@@ -2,7 +2,7 @@ import PocketBase, { RecordModel } from "pocketbase";
 import {success, error, warning, info, init as initNotyf} from "./notify";
 
 let pb: PocketBase;
-
+let lendUsername = false;
 
 async function loginWithPassword(e) {
     e.preventDefault();
@@ -11,16 +11,23 @@ async function loginWithPassword(e) {
     const passInput: HTMLInputElement = document.getElementById("password") as HTMLInputElement;
     const tryAdminLogin = $("#try-admin-login").is(":checked")
 
-    if (passInput.value) {
-        
+    async function login(suffix="") {
         const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
         try {
             // @ts-ignore
-            const data = await login.authWithPassword(username, passInput.value);
+            return await login.authWithPassword(username + suffix, passInput.value);
         } catch (err) {
             error(err.response.message);
-            return;
+            return err;
         }
+    }
+
+    if (passInput.value) {
+        if (!lendUsername) {
+            //for (let i=0; )
+            login()
+        }
+        
 
         
         success("Logged in!")
@@ -137,8 +144,8 @@ async function loggedIn() {
         $("#admin-settings").show()
     }
 }
-
-function init(justReturnPb=false, tryWithoutAuth=false): PocketBase {
+function init({justReturnPb=false, tryWithoutAuth=false, lendUsername=false}): PocketBase {
+    lendUsername = lendUsername;  // Set global
     // Init notifications
     initNotyf();
 
