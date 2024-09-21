@@ -1,5 +1,5 @@
 import init from "./settings";
-import {success, error, warning, reportError} from "./notify";
+import {success, error, warning, info, reportError} from "./notify";
 import { CollectionModel, RecordModel } from "pocketbase";
 
 
@@ -164,6 +164,7 @@ async function createUserOnForm(e) {
     e.preventDefault();
     const form = $(e.target);
     const username = form.attr("id");
+
     function password() {
         return form.children(".password").val() as string;
     }
@@ -174,15 +175,34 @@ async function createUserOnForm(e) {
         error("Username is missing when creating user");
         throw Error(e);
     }
-    createUser(username, password, passwordConfirm);
+
+    if (username != "chaperone") {
+        createUser(username, false, password, passwordConfirm)
+    } else {
+        const amountRaw = form.children("input[name='chaperone-amount']").val() as string;
+        let amount;
+        if (!amountRaw) {
+            error("Amount of chaperone accounts must be set")
+        }
+        try {
+            amount = parseInt(amountRaw);
+        } catch (e) {
+            error("Failed to parse chaperone amount. See console.log")
+            throw new Error(e);
+        }
+        for (let i = 0; i < amount; i++) {
+            console.log(await createUser(`${username}${i}`, true, password, passwordConfirm));
+        }
+    }
+
 }
 
 // Keep the passwords outside of variables
-async function createUser(username: string, password: () => string, passwordConfirm: () => string) {
+async function createUser(username: string, is_chaperone: boolean, password: () => string, passwordConfirm: () => string) {
     function newUser() {
         return {
             username: username,
-            is_chaperone: username.includes("chaperone"),
+            is_chaperone: is_chaperone,
             password: password(),
             passwordConfirm: passwordConfirm()
         };
@@ -200,6 +220,7 @@ async function createUser(username: string, password: () => string, passwordConf
             user = await pb.collection("users").create(newUser(), {requestKey: null});
         }
         success(`PIN set for ${user.username}!`);
+        return user;
     } catch (err) {
         reportError("Error while setting pin for " + username, err);
     }

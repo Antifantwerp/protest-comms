@@ -13,7 +13,7 @@ mixin userForm(username, is_chaperone=false)
 
         if is_chaperone
             label(for="chaperone-amount") Maximum amount of chaperones?
-            input(type="chaperone-amount" placeholder=20)
+            input(type="number" name="chaperone-amount" id="chaperone-amount" placeholder=20)
             p Note that setting the chaperone pin will reset all chaperone users!
             
         input(type="submit" class="username-change" value=`Change ${username} password`)
