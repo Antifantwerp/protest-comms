@@ -23,32 +23,37 @@ async function loginWithPassword(e) {
     const tryAdminLogin = $("#try-admin-login").is(":checked")
 
     if (passInput.value) {
-        let auth: {success:boolean, data:any} = {success: false, data: {}};
+        let auth: {success:boolean, data:any};
         if (!lendUsernameGlobal) {
             auth = await login(username, passInput, tryAdminLogin);        
         } else {
-            const chaperones = await pb.collection("users").getFullList();
-            let i = 0;
-            for (let i = 0; i < chaperones.length; i++) {
-                console.log(`Trying ${chaperones[i].username} (id: ${chaperones[i].id})`)
-                auth = await login(chaperones[i].username, passInput, tryAdminLogin);
-                if (auth.success) {
-                    break;
-                }
-            }
+            // Try to log in with username
+            auth = await login(username, passInput, tryAdminLogin);
             if (!auth.success) {
-                error("Couldn't lend username!");
-            } else {
-                if (pb.authStore.model) {
-                    try {
-                        await pb.collection("users").update(pb.authStore.model.id, {
-                            username: username
-                        })
-                    } catch (e) {
-                        console.log("Error while changing username")
-                        console.log(e)
+                console.log(`Couldn't login to ${username}. Lending username...`);
+                const chaperones = await pb.collection("users").getFullList();
+                let i = 0;
+                for (let i = 0; i < chaperones.length; i++) {
+                    console.log(`Trying ${chaperones[i].username} (id: ${chaperones[i].id})`)
+                    auth = await login(chaperones[i].username, passInput, tryAdminLogin);
+                    if (auth.success) {
+                        break;
                     }
                 }
+                if (!auth.success) {
+                    error("Couldn't lend username!");
+                } else {
+                    if (pb.authStore.model) {
+                        try {
+                            await pb.collection("users").update(pb.authStore.model.id, {
+                                username: username
+                            })
+                        } catch (e) {
+                            console.log("Error while changing username")
+                            console.log(e)
+                        }
+                    }
+                }   
             }
         }
         
