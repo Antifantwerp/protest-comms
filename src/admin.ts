@@ -179,6 +179,13 @@ async function createUserOnForm(e) {
     if (username != "chaperone") {
         createUser(username, false, password, passwordConfirm)
     } else {
+        // Remove any existing chaperones
+        const chaperones = await pb.collection("users").getFullList({filter: "is_chaperone = true"})
+        chaperones.forEach(async (user) => {
+            await pb.collection("users").delete(user.id);
+            info(`Deleted ${user.username} (id: ${user.id})`)
+        })        
+
         const amountRaw = form.children("input[name='chaperone-amount']").val() as string;
         let amount;
         if (!amountRaw) {
