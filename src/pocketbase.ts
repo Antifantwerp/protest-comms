@@ -90,6 +90,16 @@ async function loggedIn() {
                 if (currentSlogan) {
                     $(".current-slogan").removeClass("current-slogan");
                     $("#" + currentSlogan).addClass("current-slogan")
+                    // TODO: move this code to a better spot?
+                    if ($("#editor-current-slogan ol li").length > 0) {
+                        window.location.hash = "#current-" + currentSlogan;
+                        
+                    } else if ($("#editor-change-slogans ol li").length > 0) {
+                        // Do nothing
+                    } else {
+                        window.location.hash = "#" + currentSlogan;
+
+                    }
                 }
                 if (message) {
                     const msg = message.toLowerCase();
