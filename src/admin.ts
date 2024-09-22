@@ -142,6 +142,10 @@ async function setupCollections() {
                         cascadeDelete: false
                     }
                 },
+                {
+                    name: "chaperone_nickname",  // Set here to decrease requests for subscriptions
+                    type: "text",
+                },
             ],
             listRule: sloganViewOrListPermission,
             viewRule: sloganViewOrListPermission,

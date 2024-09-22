@@ -1,5 +1,6 @@
 import PocketBase, { RecordModel } from "pocketbase";
 import {success, error, warning, info, init as initNotyf} from "./notify";
+import { NotyfEvent } from "notyf";
 
 let pb: PocketBase;
 let lendUsernameGlobal = false;
@@ -124,20 +125,30 @@ async function loggedIn() {
         pb.collection("ping").subscribe("*", function(data) {
             if (data.action == "update") {
                 const currentSlogan = data.record.currentslogan;
+                const chaperone = data.record.chaperone;
+                const chaperoneNickname = data.record.chaperone_nickname;
                 const message = data.record.message;
+                const chaperoneClass = "." + chaperone;
                 if (currentSlogan) {
-                    $(".current-slogan").removeClass("current-slogan");
-                    $("#" + currentSlogan).addClass("current-slogan")
-                    // TODO: move this code to a better spot?
-                    if ($("#editor-current-slogan ol li").length > 0) {
-                        window.location.hash = "#current-" + currentSlogan;
+                    const oldSlogan = $(chaperoneClass).removeClass(chaperoneClass);
+                    console.log(oldSlogan);
+                    if (oldSlogan.attr("class")) {
                         
-                    } else if ($("#editor-change-slogans ol li").length > 0) {
-                        // Do nothing
-                    } else {
-                        window.location.hash = "#" + currentSlogan;
-
                     }
+
+                    $("#" + currentSlogan).addClass(chaperoneClass).addClass("current-slogan")
+                    // TODO: move this code to a better spot?
+                    info(`${chaperoneNickname}: Slogan changed to ${$("#" + currentSlogan).text()}`).on(NotyfEvent.Click, ({target, event}) => {
+                        if ($("#editor-current-slogan ol li").length > 0) {
+                            window.location.hash = "#current-" + currentSlogan;
+                            
+                        } else if ($("#editor-change-slogans ol li").length > 0) {
+                            // Do nothing
+                        } else {
+                            window.location.hash = "#" + currentSlogan;
+                        }
+                    });
+
                 }
                 if (message) {
                     const msg = message.toLowerCase();

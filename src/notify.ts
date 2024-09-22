@@ -39,23 +39,22 @@ function init() {
 }
 
 function success(msg) {
-    notyf.success(msg);
+    return notyf.success(msg);
 }
 function warning(msg) {
-    notyf.open({
+    return notyf.open({
         type: "warning",
         message: msg
     });
 }
 function info(msg) {
-    notyf.open({
+    return notyf.open({
         type: "info",
         message: msg
     });
-
 }
 function error(msg) {
-    notyf.error(msg);
+    return notyf.error(msg);
 }
 
 function _unidentifiedError(err: Error) {

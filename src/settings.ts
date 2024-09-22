@@ -115,7 +115,7 @@ async function getChaperonePing() {
         return await pb.collection("ping").getFirstListItem(`chaperone = "${model.id}"`)
     }
     catch (err) {
-        return await pb.collection("ping").create({chaperone: model.id});
+        return await pb.collection("ping").create({chaperone: model.id, chaperone_nickname: model.username});
     }
 }
 
