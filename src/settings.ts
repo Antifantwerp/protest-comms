@@ -1,4 +1,4 @@
-import PocketBase, { UnsubscribeFunc } from "pocketbase";
+import PocketBase, { RecordModel, UnsubscribeFunc } from "pocketbase";
 import { init, subscribeToSloganChange } from "./pocketbase";
 import { error, reportError } from "./notify";
 
@@ -11,7 +11,7 @@ const signalQuickSelectors = $("#send-signal select");
 async function changeCurrentSlogan(e) {
     const selectedRadio = $(e.target)
     const sloganId = selectedRadio.attr("id")?.replace("current-", "");
-    const ping = (await pb.collection("ping").getList(1, 1)).items[0];
+    const ping = await getChaperonePing();
     pb.collection("ping").update(ping.id, {
         currentslogan: sloganId,
     })
@@ -104,12 +104,26 @@ async function editSlogan(e) {
 
 }
 
+async function getChaperonePing() {
+    const model = pb.authStore.model;
+    if (!model) {
+        const msg = "Auth information could not be loaded. Are you logged in?";
+        error(msg)
+        throw new Error(msg);
+    }
+    try {
+        return await pb.collection("ping").getFirstListItem(`chaperone = "${model.id}"`)
+    }
+    catch (err) {
+        return await pb.collection("ping").create({chaperone: model.id});
+    }
+}
+
 async function onSubmitSendSignal(e) {
     e.preventDefault();
 
     const form = $(e.target);
-    const ping = (await pb.collection("ping").getList(1, 1)).items[0];
-    console.log(ping)
+    const ping = await getChaperonePing();
     try {
         const data = await pb.collection("ping").update(ping.id, {
             message: form.children("#signal").val()
@@ -119,11 +133,9 @@ async function onSubmitSendSignal(e) {
                 message: null
             })
         }, 4000)
-    }
-    catch (err) {
+    } catch (err) {
         reportError("Error while sending signal", err);
     }
-    
 }
 
 

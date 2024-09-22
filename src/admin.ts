@@ -12,6 +12,7 @@ const ALLOW_EVERYONE = "";  // empty allows everyone, no matter if logged in
 const ALLOW_ONLY_CHAPERONE_AND_ADMINS = `@request.auth.is_chaperone = true`
 const ALLOW_IF_IS_CHAPERONE_IS_NOT_SET = "@request.data.is_chaperone:isset = false";
 const ALLOW_IF_NOT_ATTENDEE = 'username != "attendee"';
+const ALLOW_IF_CHAPERONE_IS_REQUESTER = `@request.auth.id = chaperone`;
 
 async function createOrUpdateCollection(collectionId, schema) {
     let data: CollectionModel|null = null;
@@ -144,8 +145,8 @@ async function setupCollections() {
             ],
             listRule: sloganViewOrListPermission,
             viewRule: sloganViewOrListPermission,
-            createRule: ALLOW_ONLY_ADMINS,
-            updateRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
+            createRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
+            updateRule: ALLOW_IF_CHAPERONE_IS_REQUESTER,
             deleteRule: ALLOW_ONLY_ADMINS,
         })
     } catch (err) {
