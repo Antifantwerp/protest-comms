@@ -68,9 +68,10 @@ async function activateSloganChanger(activate:boolean) {
         editorSubscriptions.push(await pb.collection("ping").subscribe("*", function(data) {
             if (data.action == "update") {
                 const currentSlogan = data.record.currentslogan;
+                const chaperone = data.record.chaperone;
                 if (currentSlogan) {
                     // Removing current-slogan is taken care of by original subscribe
-                    $("#current-" + currentSlogan).parent().addClass("current-slogan")
+                    $("#current-" + currentSlogan).parent().addClass("current-slogan").addClass(chaperone);
                 }
             }
         }))
