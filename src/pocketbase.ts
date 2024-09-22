@@ -128,15 +128,14 @@ async function loggedIn() {
                 const chaperone = data.record.chaperone;
                 const chaperoneNickname = data.record.chaperone_nickname;
                 const message = data.record.message;
-                const chaperoneClass = "." + chaperone;
                 if (currentSlogan) {
-                    const oldSlogan = $(chaperoneClass).removeClass(chaperoneClass);
-                    console.log(oldSlogan);
-                    if (oldSlogan.attr("class")) {
-                        
+                    const oldSlogan = $("." + chaperone).removeClass(chaperone);
+                    // If it's no other chaperones current slogan
+                    if (oldSlogan.attr("class") == "current-slogan") {
+                        oldSlogan.removeClass("current-slogan")
                     }
 
-                    $("#" + currentSlogan).addClass(chaperoneClass).addClass("current-slogan")
+                    $("#" + currentSlogan).addClass(chaperone).addClass("current-slogan")
                     // TODO: move this code to a better spot?
                     info(`${chaperoneNickname}: Slogan changed to ${$("#" + currentSlogan).text()}`).on(NotyfEvent.Click, ({target, event}) => {
                         if ($("#editor-current-slogan ol li").length > 0) {
