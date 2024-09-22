@@ -1,3 +1,4 @@
+/* General styling */
 body {
     font-size: 16px;
 }
@@ -16,6 +17,7 @@ header, footer {
     text-align: center;
 }
 
+/* Universal classes */
 .black-text {
     color: black;
 }
@@ -27,11 +29,11 @@ header, footer {
 .reveal {
     display: initial;
     opacity: 0;
-    
 }
 
 
 
+/* Specific parts */
 .loading {
     > * {
         display: none;
@@ -40,12 +42,6 @@ header, footer {
         display: initial;
         font-size: 2em;
     }
-}
-
-
-.current-slogan {
-    font-size: 1.5em;
-    font-weight: bold;
 }
 
 #slogans ol, #editor-current-slogan ol {
@@ -65,6 +61,11 @@ header, footer {
         border-bottom: $border;
 
     }
+}
+
+.current-slogan {
+    font-size: 1.5em;
+    font-weight: bold;
 }
 
 #logout {

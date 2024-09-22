@@ -7,10 +7,12 @@ mixin login(username, lendUser, adminLogin=false)
             label(for="password") Enter PIN:
 
         else
-            h2 Login #{lendUser}
             if !lendUser
+                h2 Login
                 input(id="username" name="username" placeholder="username/user@example.com")
             else 
+                h2 Login #{lendUser}
+
                 label(for="username") Desired nickname
                 input(id="username" name="username" placeholder="Your nickname here...")
             label(for="password") Enter password:

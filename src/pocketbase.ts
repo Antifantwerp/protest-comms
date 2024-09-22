@@ -2,6 +2,16 @@ import PocketBase, { RecordModel } from "pocketbase";
 import {success, error, warning, info, init as initNotyf} from "./notify";
 import { NotyfEvent } from "notyf";
 
+/**
+ * Handles all Pocketbase stuff that is used by everyone (attendee, chaperone, admin)
+ * This includes, but is not limited to
+ * - Logging in
+ * - Handling userlending (see README.md)
+ * - Loading in slogans
+ * - Initialise notify.ts
+ * - Subscribe to - and display - slogans & pings information
+ */
+
 let pb: PocketBase;
 let lendUsernameGlobal = false;
 

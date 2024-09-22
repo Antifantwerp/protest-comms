@@ -2,6 +2,12 @@ import {init} from "./pocketbase";
 import {success, error, warning, info, reportError} from "./notify";
 import { CollectionModel, RecordModel } from "pocketbase";
 
+/**
+ * All admin specific functionality including (but not limited to):
+ * - Importing & initialising ./pocketbase.ts
+ * - Setting up collections
+ * - Creating/deleting/setting passwords for users
+ */
 
 const pb = init({});
 

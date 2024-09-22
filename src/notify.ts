@@ -1,6 +1,10 @@
 import { Notyf } from "notyf";
 import { ClientResponseError } from "pocketbase";
 
+/**
+ * Helper functions for universal pop-ups and error logging
+ */
+
 let notyf: Notyf;
 const UNIDENTIFIED_ERROR_MESSAGE = "Unidentified error! See the logs for more info";
 

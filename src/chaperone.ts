@@ -2,6 +2,13 @@ import PocketBase, { RecordModel, UnsubscribeFunc } from "pocketbase";
 import { init as pocketbaseInit, subscribeToSloganChange } from "./pocketbase";
 import { error, reportError } from "./notify";
 
+/**
+ * All chaperone specific functionality, including (but not limited to):
+ * - Importing & initialising pocketbase.ts
+ * - Changing the chaperones current slogan
+ * - Editing/adding/removing slogans
+ */
+
 let pb: PocketBase;
 
 let addingSlogan = false;
