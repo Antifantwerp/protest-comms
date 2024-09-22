@@ -67,6 +67,9 @@ So instead of that, the userlend system has been made!
 8. If the password is correct, the chaperone account will update its own username to the desired username. This allows for logging back into the lended account (see 5.)
 9. If the password is wrong, it'll simply not work, as expected. 
 
+### Admin accounts are separate from chaperones
+When there was only one active currentslogan (e.g. no per-chaperone), admins could also change current slogans. However, admin accounts are not used in Pocketbase users collection field relations, so the previously common controls from chaperone & admin have been moved directly into chaperone and removed from admin.
+
 ### Permissions
 
 

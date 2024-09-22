@@ -9,9 +9,9 @@ const ALLOW_ONLY_REGISTERED_USERS = '@request.auth.id != ""';  // https://pocket
 const ALLOW_IF_SELF = "id = @request.auth.id";
 const ALLOW_ONLY_ADMINS = null;  // null sets admin only
 const ALLOW_EVERYONE = "";  // empty allows everyone, no matter if logged in
-const ALLOW_ONLY_CHAPERONE_AND_ADMINS = `@request.auth.is_chaperone = true"`
+const ALLOW_ONLY_CHAPERONE_AND_ADMINS = `@request.auth.is_chaperone = true`
 const ALLOW_IF_IS_CHAPERONE_IS_NOT_SET = "@request.data.is_chaperone:isset = false";
-
+const ALLOW_IF_NOT_ATTENDEE = 'username != "attendee"';
 
 async function createOrUpdateCollection(collectionId, schema) {
     let data: CollectionModel|null = null;
@@ -49,7 +49,7 @@ async function setupCollections() {
             ],
             listRule: `${ALLOW_IF_SELF} || username ~ "chaperone%"`,  // If starts with chaperone
             createRule: ALLOW_ONLY_ADMINS,
-            updateRule: `${ALLOW_IF_SELF} && ${ALLOW_IF_IS_CHAPERONE_IS_NOT_SET}`,
+            updateRule: `${ALLOW_IF_NOT_ATTENDEE} && ${ALLOW_IF_SELF} && ${ALLOW_IF_IS_CHAPERONE_IS_NOT_SET}`,  // TODO, use id? re-integrate previously removed chaperone id system
             deleteRule: ALLOW_ONLY_ADMINS,
             options: {
                 allowOAuth2Auth: false,
@@ -113,6 +113,7 @@ async function setupCollections() {
     try {
         // COLLECTION: ping
         const slogansCollectionId = (await pb.collections.getOne("slogans")).id;
+        const usersCollectionId = (await pb.collections.getOne("users")).id
         await createOrUpdateCollection("ping", {
             name: "ping",
             type: "base",
@@ -127,6 +128,15 @@ async function setupCollections() {
                     type: "relation",
                     options: {
                         collectionId: slogansCollectionId,
+                        maxSelect: 1,
+                        cascadeDelete: false
+                    }
+                },
+                {
+                    name: "chaperone",
+                    type: "relation",
+                    options: {
+                        collectionId: usersCollectionId,
                         maxSelect: 1,
                         cascadeDelete: false
                     }
