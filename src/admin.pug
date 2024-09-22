@@ -1,7 +1,6 @@
 extends layouts/_layout.pug
 
 include layouts/login.pug
-include layouts/settings.pug
 
 mixin userForm(username, is_chaperone=false)
     form(action="POST" id=username).userForm
@@ -26,8 +25,6 @@ block nav
 
 block content
     +login(false, false, true)
-    +settings()
-
 
     section#admin-settings
         h2 Admin Settings
