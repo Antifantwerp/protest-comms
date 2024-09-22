@@ -1,6 +1,6 @@
 {
   "name": "protest-comms",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Coordinate slogans, moving, and communicate the needs of your group",
   "pwaManifest": {
     "name": "Protest Communicator",
