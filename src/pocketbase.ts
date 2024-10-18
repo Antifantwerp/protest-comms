@@ -15,13 +15,15 @@ import { NotyfEvent } from "notyf";
 let pb: PocketBase;
 let lendUsernameGlobal = false;
 
-async function login(username: string, passInput:HTMLElement, tryAdminLogin=false) {
+async function login(username: string, passInput:HTMLElement, tryAdminLogin=false, showErrors=true) {
     const login = !tryAdminLogin ? pb.collection("users") : pb.admins;
     try {
         // @ts-ignore
         return {success:true, data: await login.authWithPassword(username, passInput.value)};
     } catch (err) {
-        error(err.response.message);
+        if (showErrors) {
+            error(err.response.message);
+        }
         return {success:false, data: err};
     }
 }
@@ -39,14 +41,14 @@ async function loginWithPassword(e) {
             auth = await login(username, passInput, tryAdminLogin);        
         } else {
             // Try to log in with username
-            auth = await login(username, passInput, tryAdminLogin);
+            auth = await login(username, passInput, tryAdminLogin, false);
             if (!auth.success) {
                 console.log(`Couldn't login to ${username}. Lending username...`);
                 const chaperones = await pb.collection("users").getFullList();
                 let i = 0;
                 for (let i = 0; i < chaperones.length; i++) {
                     console.log(`Trying ${chaperones[i].username} (id: ${chaperones[i].id})`)
-                    auth = await login(chaperones[i].username, passInput, tryAdminLogin);
+                    auth = await login(chaperones[i].username, passInput, tryAdminLogin, false);
                     if (auth.success) {
                         break;
                     }
