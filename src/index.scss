@@ -43,6 +43,14 @@ header, footer {
         font-size: 2em;
     }
 }
+.login {
+    > * {
+        display: none;
+    }
+    #loginForm {
+        display: initial;
+    }
+}
 
 #slogans ol, #editor-current-slogan ol {
     display: flex;

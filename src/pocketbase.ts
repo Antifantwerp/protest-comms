@@ -121,8 +121,9 @@ function subscribeToSloganChange(
 
 
 async function loggedIn() {
-    // Remove initial hiding class
+    // Remove initial hiding classes
     $("main").removeClass("loading");
+    $("main").removeClass("login");
     // Hide loading & login
     $("#loading").hide();
     $("#loginForm").hide();     
@@ -197,6 +198,19 @@ async function loggedIn() {
         $("#admin-settings").show()
     }
 }
+
+function doneLoading() {
+    $("#loading").hide();
+    $(".loading").removeClass("loading")
+    //$("main > *").hide();
+}
+
+function showLogin() {
+    $("main").addClass("login");
+    $("#loginForm").on("submit", loginWithPassword);
+}
+
+
 function init({justReturnPb=false, tryWithoutAuth=false, lendUsername=false}): PocketBase {
     lendUsernameGlobal = lendUsername;
     // Init notifications
@@ -213,33 +227,30 @@ function init({justReturnPb=false, tryWithoutAuth=false, lendUsername=false}): P
         return pb;
     }
 
-    $(window).on("load", async function() {        
+    $(window).on("load", async function() {   
+        // IF logged in     
+        if (pb.authStore.isValid) {
+            doneLoading();
+            loggedIn();
+        }
         // If not logged in
-        if (!pb.authStore.isValid) {
+        else {
+            if (!tryWithoutAuth) {
+                doneLoading();
+                showLogin();
+            }
             // For index/attendee page, still try without auth
-            if (tryWithoutAuth) {
+            else {
                 const data = await pb.collection("slogans").getList(1, 1);  // Return 1
+                doneLoading()
                 if (data.totalItems == 0) {
                     warning("No slogans could be loaded. Are you logged in?");
                 } else {
                     // TODO: cleaner solution
                     loggedIn();
-                    return pb;
                 }
             }
-
-            // Remove initial hiding class
-            $("main").removeClass("loading");
-            // Hide all shown elements
-            $("main > *").hide();
-            // Enable & show login
-            $("#loginForm").on("submit", loginWithPassword).show();
         }
-        // If logged in
-        else {
-            loggedIn();
-        }
-        
     });
     
     return pb;
