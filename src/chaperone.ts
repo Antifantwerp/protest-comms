@@ -170,11 +170,48 @@ function onClickSloganChanger() {
     activateSloganChanger(activate);
 }
 
+function _sloganFormInput(id: string, label: string, placeholder: string, required: boolean=false) {
+    const reqLabel = required ? "" : " (optional)";
+    const reqInput = required ? 'required="true" ' : "";
+    return `
+    <label for="${id}" id="${id}-label">${label}${reqLabel}</label>
+    <input type="text" id="${id}" name="${id}" placeholder="${placeholder}" ${reqInput}/>
+    `
+}
+
+function sloganForm(prefix: string) {
+    const pre = `${prefix}-slogan-`;
+    console.log(process.env.LANGUAGES)
+    let languageForms: string[] = [];
+    if (process.env.LANGUAGES == undefined) {
+        languageForms = [];
+    } else {
+        languageForms = process.env.LANGUAGES.split(",").map((lang) => {
+            return _sloganFormInput(pre + "lang-" + lang, `Translation (${lang})`, `Translation in ${lang}...`)
+        })
+    }
+    return [
+        "<article>",
+        "<form class='slogan-form'>",
+        _sloganFormInput(pre + "line-one", "Slogan text (line 1)", "New slogan text (line 1)...", true),
+        _sloganFormInput(pre + "line-two", "Slogan text (line 2)", "New slogan text (line 2)..."),
+        ].concat(languageForms).concat([
+            "</form>",
+            "</article>"
+        ]).join("")
+}
+
+/**
+ * 
+ * new-slogan-line-1
+ * new-slogan-line-2
+ */
+
+
 function onClickAddSlogan(e) {
     const addSlogan = $(e.target);
     if (!addingSlogan) {
-        addSlogan.before(`<label for="new-slogan" id="new-slogan-label" />`)
-                 .before(`<input type="text" id="new-slogan" name="new-slogan" placeholder="New slogan text..." />`)
+        addSlogan.before(sloganForm("new"))
         addSlogan.val("Save new slogan").addClass("outline");
     } else {
         pb.collection("slogans").create({
