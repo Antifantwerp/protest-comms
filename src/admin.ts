@@ -23,7 +23,7 @@ const ALLOW_IF_CHAPERONE_IS_REQUESTER = `@request.auth.id = chaperone`;
 async function createOrUpdateCollection(collectionId, schema) {
     let data: CollectionModel|null = null;
     let action: string = "";
-;    try {
+    try {
         await pb.collections.getOne(collectionId);  // Will throw to catch if not found
         data = await pb.collections.update(collectionId, schema);
         action = "Updated";
@@ -40,10 +40,43 @@ async function createOrUpdateCollection(collectionId, schema) {
     }
 }
 
+async function getFullList(collectionName: string, label: string) : Promise<RecordModel[]> {
+    try {
+        return await pb.collection(collectionName).getFullList();   
+    }
+    catch (err) {
+        reportError("Error while trying to get " + label, err);
+        return [];
+    }
+}
+
+async function reAddValues(collectionName: string, records: RecordModel[], keys: string[], label: string) {
+    try {
+        if (records.length > 0) {
+            records.forEach(async (record) => {
+                const obj = {};
+                keys.forEach((key) => {
+                    obj[key] = record[key];
+                });
+
+                await pb.collection(collectionName).update(record.id, obj);
+            })
+            success("Re-added " + label)
+        }
+    } catch (err) {
+        reportError("Error while trying to re-add" + label, err);
+    }
+}
+
 async function setupCollections() {
     const requirePINForViewingSlogans = $("#require-login").is(":checked");
 
     const sloganViewOrListPermission = requirePINForViewingSlogans ? ALLOW_ONLY_REGISTERED_USERS : ALLOW_EVERYONE;
+
+    // Setting up collections resets existing values. Save them here
+    let users = await getFullList("users", "existing users")
+    let slogans = await getFullList("slogans", "existing slogan values");
+
 
     try {
         // COLLECTION: users
@@ -69,18 +102,9 @@ async function setupCollections() {
     } catch (err) {
         reportError("Error while trying to update users collection", err);
     }
+    reAddValues("users", users, ["is_chaperone"], "is_chaperone values")
 
 
-    // Setting up collections clears slogan values. Save them here
-    let slogans: RecordModel[];
-    try {
-        slogans = await pb.collection("slogans").getFullList();   
-    }
-    catch (err) {
-        slogans = [];
-        reportError("Error while trying to get existing slogan values", err);
-    }
-    
     try {
         // COLLECTION: slogans
         await createOrUpdateCollection("slogans", {
@@ -104,18 +128,7 @@ async function setupCollections() {
     }
 
     // Re-add slogan values
-    try {
-        if (slogans.length > 0) {
-            slogans.forEach(async (slogan) => {
-                await pb.collection("slogans").update(slogan.id, {
-                    text: slogan.text
-                });
-            })
-            success("Re-added slogan values")
-        }
-    } catch (err) {
-        reportError("Error while trying to re-add slogan values", err);
-    }
+    reAddValues("slogans", slogans, ["text"], "slogan values");
 
     try {
         // COLLECTION: ping
