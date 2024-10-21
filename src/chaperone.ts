@@ -1,7 +1,7 @@
 import PocketBase, { RecordModel, UnsubscribeFunc } from "pocketbase";
 import { init as pocketbaseInit, subscribeToSloganChange } from "./pocketbase";
 import { error, reportError } from "./notify";
-import LANGUAGES from "./languages";
+import languages from "./languages";
 
 /**
  * All chaperone specific functionality, including (but not limited to):
@@ -12,8 +12,6 @@ import LANGUAGES from "./languages";
 
 let pb: PocketBase;
 
-// If no languages are configured, only use English
-const languages = process.env.LANGUAGES ? process.env.LANGUAGES?.split(",").map(code => LANGUAGES[code]) : [ LANGUAGES["en"] ];
 
 
 let addingSlogan = false;
@@ -185,33 +183,22 @@ function _sloganFormInput(id: string, label: string, placeholder: string, requir
 }
 
 function sloganForm(prefix: string) {
-    const pre = `${prefix}-slogan-`;
-    console.log(process.env.LANGUAGES)
-    let languageForms: string[] = [];
-    if (process.env.LANGUAGES == undefined) {
-        languageForms = [];
-    } else {
-        languageForms = process.env.LANGUAGES.split(",").map((lang) => {
-            return _sloganFormInput(pre + "lang-" + lang, `Translation (${lang})`, `Translation in ${lang}...`)
-        })
-    }
+    const pre = `${prefix}-slogan`;
+    const textForms = languages.map((lang) => {
+        let inputs = [lang.lineOne, lang.lineTwo].map(line => 
+            _sloganFormInput(`${pre}-${line.id}`, line.label, line.placeholder, line.required)
+        )
+        return inputs.join("")
+    });
+    
     return [
         "<article>",
         "<form class='slogan-form'>",
-        _sloganFormInput(pre + "line-one", "Slogan text (line 1)", "New slogan text (line 1)...", true),
-        _sloganFormInput(pre + "line-two", "Slogan text (line 2)", "New slogan text (line 2)..."),
-        ].concat(languageForms).concat([
+        ].concat(textForms).concat([
             "</form>",
             "</article>"
         ]).join("")
 }
-
-/**
- * 
- * new-slogan-line-1
- * new-slogan-line-2
- */
-
 
 function onClickAddSlogan(e) {
     const addSlogan = $(e.target);

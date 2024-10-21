@@ -1,6 +1,7 @@
 import {init} from "./pocketbase";
 import {success, error, warning, info, reportError} from "./notify";
 import { CollectionModel, RecordModel } from "pocketbase";
+import languages from "./languages";
 
 /**
  * All admin specific functionality including (but not limited to):
@@ -107,16 +108,19 @@ async function setupCollections() {
 
     try {
         // COLLECTION: slogans
+
+        
+        const schema = languages.map(lang => [
+            {
+                name: "line-one",
+                type: "text"
+            },
+            
+        ]).flat();
         await createOrUpdateCollection("slogans", {
             name: "slogans",
             type: "base",
-            schema: [
-                {
-                    name: "text",
-                    type: "text",
-                    required: true
-                }
-            ],
+            schema: schema,
             listRule: sloganViewOrListPermission,
             viewRule: sloganViewOrListPermission,
             createRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
