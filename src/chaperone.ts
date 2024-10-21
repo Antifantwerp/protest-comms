@@ -1,6 +1,7 @@
 import PocketBase, { RecordModel, UnsubscribeFunc } from "pocketbase";
 import { init as pocketbaseInit, subscribeToSloganChange } from "./pocketbase";
 import { error, reportError } from "./notify";
+import LANGUAGES from "./languages";
 
 /**
  * All chaperone specific functionality, including (but not limited to):
@@ -10,6 +11,10 @@ import { error, reportError } from "./notify";
  */
 
 let pb: PocketBase;
+
+// If no languages are configured, only use English
+const languages = process.env.LANGUAGES ? process.env.LANGUAGES?.split(",").map(code => LANGUAGES[code]) : [ LANGUAGES["en"] ];
+
 
 let addingSlogan = false;
 let editorSubscriptions: UnsubscribeFunc[] = [];
