@@ -33,7 +33,7 @@
     "notyf": "^3.10.0",
     "parcel": "^2.12.0",
     "parcel-config-pwa-manifest": "^0.1.6",
-    "parcel-reporter-strict-csp": "^0.1.1",
+    "parcel-reporter-strict-csp": "^0.2.2",
     "pocketbase": "^0.21.5"
   }
 }

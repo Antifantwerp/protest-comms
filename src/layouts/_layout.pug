@@ -10,10 +10,6 @@ html(lang="en")
             let csp = "base-uri 'none'";
             csp += "; default-src 'none'"
             csp += "; connect-src " + env.POCKETBASE_URL
-            if (env.NODE_ENV == "development") {
-                csp += " ws://localhost:1234";  // Parcel HMR
-                csp += "; script-src 'unsafe-eval'";  // Parcel HMR
-            }
             csp += "; style-src 'self'";
             csp += "; style-src-attr 'unsafe-inline'"; // TODO: remove
             csp += "; img-src 'self'";
