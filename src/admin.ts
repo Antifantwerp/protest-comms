@@ -24,6 +24,7 @@ const ALLOW_IF_CHAPERONE_IS_REQUESTER = `@request.auth.id = chaperone`;
 async function createOrUpdateCollection(collectionId, schema) {
     let data: CollectionModel|null = null;
     let action: string = "";
+
     try {
         await pb.collections.getOne(collectionId);  // Will throw to catch if not found
         data = await pb.collections.update(collectionId, schema);
@@ -70,6 +71,9 @@ async function reAddValues(collectionName: string, records: RecordModel[], keys:
 }
 
 async function setupCollections() {
+    console.log("aaa")
+    console.error("QSIHFSI")
+
     const requirePINForViewingSlogans = $("#require-login").is(":checked");
 
     const sloganViewOrListPermission = requirePINForViewingSlogans ? ALLOW_ONLY_REGISTERED_USERS : ALLOW_EVERYONE;
@@ -106,17 +110,22 @@ async function setupCollections() {
     reAddValues("users", users, ["is_chaperone"], "is_chaperone values")
 
 
-    try {
         // COLLECTION: slogans
 
-        
         const schema = languages.map(lang => [
             {
-                name: "line-one",
-                type: "text"
+                name: lang.lineOne.dbId,
+                type: "text",
+                required: lang.lineOne.required
             },
+            {
+                name: lang.lineTwo.dbId,
+                type: "text",
+                required: lang.lineTwo.required
+            }
             
         ]).flat();
+        console.log(schema)
         await createOrUpdateCollection("slogans", {
             name: "slogans",
             type: "base",
@@ -127,9 +136,7 @@ async function setupCollections() {
             updateRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
             deleteRule: ALLOW_ONLY_CHAPERONE_AND_ADMINS,
         })
-    } catch (err) {
-        reportError("Error while trying to create/update slogans collection", err);
-    }
+    
 
     // Re-add slogan values
     reAddValues("slogans", slogans, ["text"], "slogan values");
@@ -142,12 +149,7 @@ async function setupCollections() {
             name: "ping",
             type: "base",
             schema: [
-                {
-                    name: "message",
-                    type: "text",
-                    required: false
-                },
-                {
+                /*{
                     name: "currentslogan",
                     type: "relation",
                     options: {
@@ -155,7 +157,7 @@ async function setupCollections() {
                         maxSelect: 1,
                         cascadeDelete: false
                     }
-                },
+                },*/
                 {
                     name: "chaperone",
                     type: "relation",
@@ -187,7 +189,7 @@ async function setupCollections() {
         // Create empty ping item
         await pb.collection("ping").create({
             message: "",
-            currentslogan: [],
+            //currentslogan: [],
         })
     } catch (err) {
         reportError("Error while cleaning up old pings", err);

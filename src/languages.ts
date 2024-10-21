@@ -20,6 +20,7 @@ export class Language {
     private _getLine(count: string, required: boolean=false) {
         return { 
             id: `line-${count}-${this.code}`,
+            dbId: `line_${count}_${this.code}`,
             label: `Slogan text in ${this.name} (line ${count}, ${this.emoji})`,
             placeholder: `${this.emoji} New slogan text (line ${count})...`,
             required: required
