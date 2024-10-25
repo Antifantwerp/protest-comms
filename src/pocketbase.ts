@@ -1,6 +1,7 @@
 import PocketBase, { RecordModel } from "pocketbase";
 import {success, error, warning, info, init as initNotyf} from "./notify";
 import { NotyfEvent } from "notyf";
+import languages, { Language } from "./languages";
 
 /**
  * Handles all Pocketbase stuff that is used by everyone (attendee, chaperone, admin)
@@ -81,13 +82,44 @@ async function loginWithPassword(e) {
     }
 }
 
+function _sloganLine(key: string, sloganRecord: RecordModel, lang: Language) {
+    return `<li name="${key}">${lang.emoji} ${sloganRecord[key]}</li>`;
+}
+
 const slogans = $("#slogans ol") // TODO move up
 function addSlogan(sloganRecord: RecordModel) {
-    slogans.append(`<li id="${sloganRecord.id}">${sloganRecord.text}</li>`)
+    let elem = `<li id="${sloganRecord.id}"><ul>`;
+    languages.forEach(lang => {
+        const sloganHasTwoLines = Boolean(sloganRecord[lang.lineTwo.dbId]);
+
+        if (!sloganHasTwoLines) {
+            elem +=_sloganLine(lang.lineOne.dbId, sloganRecord, lang);
+        }
+        else {
+            elem += "<ol>"
+            lang.lines.forEach(line => {
+                elem +=_sloganLine(line.dbId, sloganRecord, lang);
+            })
+            elem += "</ol>"
+        }
+
+    })
+
+    elem += "</ul></li>";
+    slogans.append(elem)
+
 }
 
 function updateSlogan(sloganRecord: RecordModel) {
-    $("#" + sloganRecord.id).text(sloganRecord.text)
+    const slogan = $("#" + sloganRecord.id)
+    languages.forEach(lang => {
+        lang.lines.forEach(line => {
+            const data = sloganRecord[line.dbId]
+            if (data) {
+                slogan.find(line.dbId).text(data)
+            }
+        })
+    })
 }
 
 function deleteSlogan(sloganRecord: RecordModel) {

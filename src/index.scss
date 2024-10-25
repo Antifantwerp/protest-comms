@@ -52,7 +52,7 @@ header, footer {
     }
 }
 
-#slogans ol, #editor-current-slogan ol {
+#slogans > ol, #editor-current-slogan > ol {
     display: flex;
     flex-direction: column;
     gap: 15px;

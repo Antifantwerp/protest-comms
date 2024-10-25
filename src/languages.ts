@@ -34,6 +34,10 @@ export class Language {
         return this._getLine("two");
     }
 
+    get lines() {
+        return [this.lineOne, this.lineTwo];
+    }
+
 }
 
 const LANGUAGES: { [key: string]: Language } = {
