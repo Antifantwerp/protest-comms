@@ -1,5 +1,5 @@
 import PocketBase, { RecordModel, UnsubscribeFunc } from "pocketbase";
-import { init as pocketbaseInit, subscribeToSloganChange } from "./pocketbase";
+import { init as pocketbaseInit, subscribeToSloganChange, sloganFromElement } from "./pocketbase";
 import { error, reportError } from "./notify";
 import languages, { Language } from "./languages";
 
@@ -97,6 +97,8 @@ async function editSlogan(e) {
     const sloganId = form.data("slogan-id");
     const sloganData = {};
 
+    
+
     languages.forEach((language) => {
         [language.lineOne, language.lineTwo].forEach((line) => {
             const data = form.find(`[name=${line.dbId}]`).val();
@@ -183,11 +185,12 @@ function onClickSloganChanger() {
 
 function _sloganFormTextInput(id: string, name: string, label: string, placeholder: string, required: boolean=false, value?: string) {
     const reqLabel = required ? "" : " (optional)";
-    const reqInput = required ? 'required="true" ' : "";
+    const reqInput = required ? ' required="true" ' : "";
+    const val = value ? `value="${value}"` : "";
     return `
     <fieldset>
     <label for="${id}" id="${id}-label">${label}${reqLabel}</label>
-    <input type="text" id="${id}" name="${name}" placeholder="${placeholder}" ${reqInput}/>
+    <input type="text" id="${id}" name="${name}" placeholder="${placeholder}"${reqInput}${val}/>
     </fieldset>
     `
 }
@@ -205,19 +208,23 @@ function _sloganFormLanguageInputs(prefix: string) {
 
 
 
-function _createSloganFormLi(sloganId?: string, sloganText?: string) {
+function _createSloganFormLi(sloganId?: string, sloganValues?: {[key:string]:string}) {
     const newLi = $(`<li></li>`)
     const form = $(`<form></form>`)
+    const prefix = sloganId || "new-slogan";
+
     
-    _sloganFormLanguageInputs("new-slogan").forEach(input => form.append(input));
+    _sloganFormLanguageInputs(prefix).forEach(input => form.append(input));
 
     form.append(`<input type="submit" class="save" value="Save" />`)
         .append(`<input type="submit" class="delete" value="Delete" />`)
 
     if (sloganId) { form.attr("data-slogan-id", sloganId); }
-    if (sloganText) {  }
+    if (sloganValues) {
 
-    if (!sloganId && !sloganText) {
+    }
+
+    if (!sloganId && !sloganValues) {
 
     }
 
@@ -239,8 +246,8 @@ function _createSloganFormLi(sloganId?: string, sloganText?: string) {
 }
 
 async function onClickEditSlogans() {
-    const slogansList = $("#slogans ol");
     toggleButton("#edit-slogans")
+    const slogansList = $("#slogans > ol");
 
     if (editorCleanup()) {
         return;
@@ -248,13 +255,14 @@ async function onClickEditSlogans() {
 
     slogansList.children().each((index: number, elem: HTMLElement) => {
         const li = $(elem);
+        console.log(li);
         const sloganId = li.attr("id");
-        const sloganText = li.text();
         if (!sloganId) {
             error("Couldn't find sloganId from li element. See console logs for more info");
             console.log(li);
             return;
         }
+        const data = sloganFromElement(li);
         _createSloganFormLi(sloganId, sloganText);
     });
 

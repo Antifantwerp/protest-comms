@@ -86,6 +86,19 @@ function _sloganLine(key: string, sloganRecord: RecordModel, lang: Language) {
     return `<li name="${key}">${lang.emoji} ${sloganRecord[key]}</li>`;
 }
 
+function sloganFromElement(elem: JQuery<HTMLElement>) {
+    const sloganData = {};
+    languages.forEach((language) => {
+        [language.lineOne, language.lineTwo].forEach((line) => {
+            const data = elem.find(`[name=${line.dbId}]`).val();
+            if (data) {
+                sloganData[line.dbId] = data;
+            }
+        })
+    })
+    return sloganData;
+}
+
 const slogans = $("#slogans ol") // TODO move up
 function addSlogan(sloganRecord: RecordModel) {
     let elem = `<li id="${sloganRecord.id}"><ul>`;
@@ -288,4 +301,4 @@ function init({justReturnPb=false, tryWithoutAuth=false, lendUsername=false}): P
     return pb;
 }
 
-export { init, subscribeToSloganChange };
+export { init, subscribeToSloganChange, sloganFromElement };
