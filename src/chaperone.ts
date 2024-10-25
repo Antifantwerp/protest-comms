@@ -1,7 +1,7 @@
 import PocketBase, { RecordModel, UnsubscribeFunc } from "pocketbase";
 import { init as pocketbaseInit, subscribeToSloganChange } from "./pocketbase";
 import { error, reportError } from "./notify";
-import languages from "./languages";
+import languages, { Language } from "./languages";
 
 /**
  * All chaperone specific functionality, including (but not limited to):
@@ -11,7 +11,6 @@ import languages from "./languages";
  */
 
 let pb: PocketBase;
-
 
 
 let addingSlogan = false;
@@ -90,23 +89,32 @@ async function activateSloganChanger(activate:boolean) {
     }
 }
 
+
 async function editSlogan(e) {
     e.preventDefault();
 
     const form = $(e.target);
     const sloganId = form.data("slogan-id");
+    const sloganData = {};
 
-    if (!sloganId) {
-        console.error("editSlogan could not get sloganId from form")
-        return;
-    }
+    languages.forEach((language) => {
+        [language.lineOne, language.lineTwo].forEach((line) => {
+            const data = form.find(`[name=${line.dbId}]`).val();
+            if (data) {
+                sloganData[line.dbId] = data;
+            }
+        })
+    })
 
     switch (form.data("action")) {
         case "save":
             const newValue = form.children(".text").first().val();
-            await pb.collection("slogans").update(sloganId, {
-                text: newValue
-            })
+            if (sloganId) {
+                await pb.collection("slogans").update(sloganId, sloganData)
+            } else {
+                await pb.collection("slogans").create(sloganData)
+            }
+            
             break;
         case "delete":
             await pb.collection("slogans").delete(sloganId);
@@ -173,55 +181,46 @@ function onClickSloganChanger() {
     activateSloganChanger(activate);
 }
 
-function _sloganFormInput(id: string, label: string, placeholder: string, required: boolean=false) {
+function _sloganFormTextInput(id: string, name: string, label: string, placeholder: string, required: boolean=false, value?: string) {
     const reqLabel = required ? "" : " (optional)";
     const reqInput = required ? 'required="true" ' : "";
     return `
+    <fieldset>
     <label for="${id}" id="${id}-label">${label}${reqLabel}</label>
-    <input type="text" id="${id}" name="${id}" placeholder="${placeholder}" ${reqInput}/>
+    <input type="text" id="${id}" name="${name}" placeholder="${placeholder}" ${reqInput}/>
+    </fieldset>
     `
 }
-
-function sloganForm(prefix: string) {
-    const pre = `${prefix}-slogan`;
-    const textForms = languages.map((lang) => {
+function _sloganFormLanguageInputs(prefix: string) {
+    return languages.map((lang) => {
         let inputs = [lang.lineOne, lang.lineTwo].map(line => 
-            _sloganFormInput(`${pre}-${line.id}`, line.label, line.placeholder, line.required)
+            _sloganFormTextInput(`${prefix}-${line.id}`, line.dbId, line.label, line.placeholder, line.required)
         )
+
+        inputs.unshift("<section class='grid'>");
+        inputs.push("</section>")
         return inputs.join("")
     });
-    
-    return [
-        "<article>",
-        "<form class='slogan-form'>",
-        ].concat(textForms).concat([
-            "</form>",
-            "</article>"
-        ]).join("")
 }
 
-function onClickAddSlogan(e) {
-    const addSlogan = $(e.target);
-    if (!addingSlogan) {
-        addSlogan.before(sloganForm("new"))
-        addSlogan.val("Save new slogan").addClass("outline");
-    } else {
-        pb.collection("slogans").create({
-            text: $("#new-slogan").val()
-        });
-        $("#new-slogan").remove();
-        $("#new-slogan-label").remove();
-        addSlogan.val("Add slogan").removeClass("outline")
-    }
-    addingSlogan = !addingSlogan;
-}
 
-function _createAddSloganForm(sloganId: string, sloganText: string) {
+
+function _createSloganFormLi(sloganId?: string, sloganText?: string) {
     const newLi = $(`<li></li>`)
-    const form = $(`<form data-slogan-id="${sloganId}"></form>`)
-    form.append(`<input type="text" value="${sloganText}" id="edit-${sloganId}" class="text" />`)
-        .append(`<input type="submit" class="save" value="Save" />`)
+    const form = $(`<form></form>`)
+    
+    _sloganFormLanguageInputs("new-slogan").forEach(input => form.append(input));
+
+    form.append(`<input type="submit" class="save" value="Save" />`)
         .append(`<input type="submit" class="delete" value="Delete" />`)
+
+    if (sloganId) { form.attr("data-slogan-id", sloganId); }
+    if (sloganText) {  }
+
+    if (!sloganId && !sloganText) {
+
+    }
+
 
     // Based on https://stackoverflow.com/a/6452340
     form.children(".save").on("click", () => {
@@ -256,13 +255,15 @@ async function onClickEditSlogans() {
             console.log(li);
             return;
         }
-        _createAddSloganForm(sloganId, sloganText);
+        _createSloganFormLi(sloganId, sloganText);
     });
+
+    _createSloganFormLi("", "")
 
     editorSubscriptions.push(await subscribeToSloganChange(
         // Add
         (record) => {
-            _createAddSloganForm(record.id, record.text);
+            _createSloganFormLi(record.id, record.text);
         },
         // Update
         (record) => {
@@ -298,7 +299,7 @@ function init() : PocketBase {
         $("#send-signal").on("submit", onSubmitSendSignal);
         signalQuickSelectors.on("input", onInputSignalQuickSelect);
     
-        $("#add-slogan").on("click", onClickAddSlogan);
+        //$("#add-slogan").on("click", onClickAddSlogan);
         $("#edit-slogans").on("click", onClickEditSlogans);
     })
 
